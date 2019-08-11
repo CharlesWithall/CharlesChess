@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Chess">
+      <UniqueIdentifier>{1bc19591-60bf-4f6f-b3cb-424104c231ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Chess\Pieces">
+      <UniqueIdentifier>{ea881b93-6717-465e-a9bc-8243bfc9cb85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{006ff7ed-4a11-496a-b5bb-9d65c2004a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Chess">
+      <UniqueIdentifier>{bd92e63d-c8be-423a-becd-685a69953d8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Chess\Pieces">
+      <UniqueIdentifier>{4e103fc2-947b-4d1f-a85f-d215cf29c804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{2083c2fb-21d6-45ab-94ec-9c38e81c353b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Chess\Rules">
+      <UniqueIdentifier>{911cd7fa-cf4b-4599-86e8-31db9bad718a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{492b767b-ef88-4562-a23b-7f8cfa2c96c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{bc605497-2ac6-4645-98af-9709b4b07e9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Highlights">
+      <UniqueIdentifier>{4e78a55b-72d8-410c-abc2-89614e469096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Highlights">
+      <UniqueIdentifier>{ceb5193a-02a1-46fe-896c-de80e7152215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Input">
+      <UniqueIdentifier>{1a841bc0-eb4f-473d-9875-3a2c2787427c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UI_Tile.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Board.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Model.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Pieces.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Queen.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rook.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Bishop.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_King.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Knight.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Pawn.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Board.h">
+      <Filter>Header Files\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Defines.h">
+      <Filter>Header Files\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Model.h">
+      <Filter>Header Files\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Tile.h">
+      <Filter>Header Files\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Piece.h">
+      <Filter>Header Files\Chess\Pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Pawn_Take.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Pawn_Move.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Pawn_EnPassant.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Knight_Move.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Bishop_Move.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Rook_Move.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Queen_Move.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_King_Move.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_King_Castle.h">
+      <Filter>Header Files\Chess\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Event_Events.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Event_Listeners.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Event_Handler.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Highlight_PossibleMove.h">
+      <Filter>Header Files\UI\Highlights</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Defines.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Listener_MouseClick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI_Board.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Model.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Pieces.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Tile.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Tile.cpp">
+      <Filter>Source Files\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Board.cpp">
+      <Filter>Source Files\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Model.cpp">
+      <Filter>Source Files\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Rook.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Bishop.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_King.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Knight.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Pawn.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Queen.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="Event_Handler.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Highlight_PossibleMove.cpp">
+      <Filter>Source Files\UI\Highlights</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Listener_MouseClick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

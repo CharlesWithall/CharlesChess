@@ -7,14 +7,15 @@
 class UI_Tile
 {
 public:
-	UI_Tile(const Chess_Pieces_Colour aColour, const Chess_File aFile, const int aRank);
+	UI_Tile(const Chess_Pieces_Colour aColour, const Chess_RankAndFile& aRankAndFile);
 	~UI_Tile();
 
 	sf::RectangleShape& GetBackgroundTile() { return myTile; }
 	
 	sf::Sprite* GetPiece() { return myPiece; }
+	const Chess_RankAndFile& GetRankAndFile() const { return myRankAndFile; }
 	void InitPiece(Chess_Pieces_EnumType aChessPieceType, Chess_Pieces_Colour aColour);
-
+	void SetPiece(sf::Sprite* const aPiece);
 	
 private:
 
@@ -22,7 +23,6 @@ private:
 	sf::RectangleShape myTile;
 	sf::Sprite* myPiece;
 	sf::Vector2f myPosition;
-	Chess_File myFile;
-	int myRank;
+	Chess_RankAndFile myRankAndFile;
 };
 

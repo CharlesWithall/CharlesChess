@@ -6,29 +6,27 @@
 
 struct Event_PieceSelected
 {
-	Event_PieceSelected(const int aRankIndex, const int aFileIndex)
-		: myRankIndex(aRankIndex)
-		, myFileIndex(aFileIndex)
+	Event_PieceSelected(const Chess_RankAndFile& aRankAndFile)
+		: myRankAndFile(aRankAndFile)
 	{
 	}
 
-	int myRankIndex;
-	int myFileIndex;
+	Chess_RankAndFile myRankAndFile;
 };
 
 struct Event_EvaulatedPossibleMoves
 {
-	struct RankFile
+	std::vector<Chess_RankAndFile> myPossibleRankAndFiles;
+};
+
+struct Event_MovePieceRequest
+{
+	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition)
+		: myFromPosition(aFromPosition)
+		, myToPosition(aToPosition)
 	{
-		RankFile(const int aRankIndex, const int aFileIndex)
-			: myRankIndex(aRankIndex)
-			, myFileIndex(aFileIndex)
-		{
-		}
+	}
 
-		int myRankIndex;
-		int myFileIndex;
-	};
-
-	std::vector<RankFile> myPossibleMoveIndices;
+	Chess_RankAndFile myFromPosition;
+	Chess_RankAndFile myToPosition;
 };

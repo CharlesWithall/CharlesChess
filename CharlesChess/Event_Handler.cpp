@@ -14,9 +14,9 @@ Event_Handler* Event_Handler::GetInstance()
 	return myInstance;
 }
 
-void Event_Handler::SendPieceSelectedEvent(const int aRankIndex, const int aFilexIndex)
+void Event_Handler::SendPieceSelectedEvent(const Chess_RankAndFile& aRankAndFile)
 {
-	Event_PieceSelected pieceSelectedEvent = Event_PieceSelected(aRankIndex, aFilexIndex);
+	Event_PieceSelected pieceSelectedEvent = Event_PieceSelected(aRankAndFile);
 
 	for (Event_Listener_PieceSelected* pieceSelectedListener : myPieceSelectedListeners)
 	{
@@ -30,11 +30,21 @@ void Event_Handler::SendEvaluatedPossibleMovesEvent(const std::vector<Chess_Tile
 
 	for (Chess_Tile* tile : somePossibleMoves)
 	{
-		evaluatedMovesEvent.myPossibleMoveIndices.push_back(Event_EvaulatedPossibleMoves::RankFile(tile->GetRank() - 1, (int)tile->GetFile() - 1));
+		evaluatedMovesEvent.myPossibleRankAndFiles.push_back(tile->GetRankAndFile());
 	}
 
 	for (Event_Listener_EvaluatedPossibleMoves* evaluatedMovesListener : myEvaluatedMovesListeners)
 	{
 		evaluatedMovesListener->OnMovesEvaluated(evaluatedMovesEvent);
+	}
+}
+
+void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition)
+{
+	Event_MovePieceRequest movePieceRequest = Event_MovePieceRequest(aFromPosition, aToPosition);
+
+	for (Event_Listener_MovePieceRequest* listener : myMovePieceRequestListeners)
+	{
+		listener->OnMovePieceRequested(movePieceRequest);
 	}
 }

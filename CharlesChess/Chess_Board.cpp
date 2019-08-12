@@ -20,6 +20,7 @@ Chess_Board::Chess_Board()
 	InitPieces();
 
 	Event_Handler::GetInstance()->RegisterPieceSelectedListener(this);
+	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
 }
 
 Chess_Board::~Chess_Board()
@@ -41,9 +42,9 @@ Chess_Board::~Chess_Board()
 	}
 }
 
-Chess_Piece* Chess_Board::GetPiece(const Chess_File aFile, const int aRank) const
+Chess_Piece* Chess_Board::GetPiece(const Chess_RankAndFile& aRankAndFile) const
 {
-	return GetTile(aFile, aRank)->GetPiece();
+	return GetTile(aRankAndFile)->GetPiece();
 }
 
 void Chess_Board::InitTiles()
@@ -53,7 +54,7 @@ void Chess_Board::InitTiles()
 		Chess_RankArray& rank = myChessTiles[i];
 		for (size_t j = 0; j < rank.size(); ++j)
 		{
-			rank[j] = new Chess_Tile(Chess_File(i + 1), j + 1);
+			rank[j] = new Chess_Tile(Chess_RankAndFile(i,j));
 		}
 	}
 }
@@ -65,25 +66,28 @@ void Chess_Board::InitPieces()
 		Chess_RankArray& rank = myChessTiles[i];
 		for (size_t j = 0; j < rank.size(); ++j)
 		{
-			rank[j]->SetPiece(CreatePiece(Chess_File(i + 1), j + 1));
+			rank[j]->SetPiece(CreatePiece(Chess_RankAndFile(i, j)));
 		}
 	}
 }
 
-Chess_Piece* Chess_Board::CreatePiece(const Chess_File aFile, const int aRank)
+Chess_Piece* Chess_Board::CreatePiece(const Chess_RankAndFile& aRankAndFile)
 {
-	if (aRank == 2)	return new Chess_Pawn(Chess_Pieces_Colour::WHITE);
-	if (aRank == 7)	return new Chess_Pawn(Chess_Pieces_Colour::BLACK);
+	const int rank = aRankAndFile.myRank;
+	const int file = aRankAndFile.myFile;
 
-	if (aRank == 1 || aRank == 8)
+	if (rank == 1)	return new Chess_Pawn(Chess_Pieces_Colour::WHITE);
+	if (rank == 6)	return new Chess_Pawn(Chess_Pieces_Colour::BLACK);
+
+	if (rank == 0 || rank == 7)
 	{
-		const Chess_Pieces_Colour pieceColour = aRank == 1 ? Chess_Pieces_Colour::WHITE : Chess_Pieces_Colour::BLACK;
+		const Chess_Pieces_Colour pieceColour = rank == 0 ? Chess_Pieces_Colour::WHITE : Chess_Pieces_Colour::BLACK;
 
-		if (aFile == Chess_File::A || aFile == Chess_File::H) return new Chess_Rook(pieceColour);
-		if (aFile == Chess_File::B || aFile == Chess_File::G) return new Chess_Knight(pieceColour);
-		if (aFile == Chess_File::C || aFile == Chess_File::F) return new Chess_Bishop(pieceColour);
-		if (aFile == Chess_File::D) return new Chess_Queen(pieceColour);
-		if (aFile == Chess_File::E) return new Chess_King(pieceColour);
+		if (file == 0 || file == 7) return new Chess_Rook(pieceColour);
+		if (file == 1 || file == 6) return new Chess_Knight(pieceColour);
+		if (file == 2 || file == 5) return new Chess_Bishop(pieceColour);
+		if (file == 3) return new Chess_Queen(pieceColour);
+		if (file == 4) return new Chess_King(pieceColour);
 	}
 
 	return nullptr;
@@ -91,12 +95,11 @@ Chess_Piece* Chess_Board::CreatePiece(const Chess_File aFile, const int aRank)
 
 Chess_Tile* Chess_Board::GetRelativeTile(const Chess_Tile* const aTile, const int xOffset, const int yOffset) const
 {
-	const int rankIndex = aTile->GetRank() + yOffset - 1;
-	const int fileIndex = aTile->GetFile() + xOffset - 1;
+	const Chess_RankAndFile rankAndFile = aTile->GetRankAndFile().GetOffset(xOffset, yOffset);
 
-	if (rankIndex >= 0 && rankIndex < myChessTiles.size() && fileIndex >= 0 && fileIndex < myChessTiles.size())
+	if (rankAndFile.IsValid())
 	{
-		return myChessTiles[fileIndex][rankIndex];
+		return GetTile(rankAndFile);
 	}
 
 	return nullptr;
@@ -104,9 +107,19 @@ Chess_Tile* Chess_Board::GetRelativeTile(const Chess_Tile* const aTile, const in
 
 void Chess_Board::OnPieceSelected(const Event_PieceSelected& anEvent)
 {
-	const Chess_Tile* const chessTile = myChessTiles[anEvent.myFileIndex][anEvent.myRankIndex];
+	const Chess_Tile* const chessTile = GetTile(anEvent.myRankAndFile);
 	if (const Chess_Piece* const chessPiece = chessTile->GetPiece())
 	{
 		Event_Handler::GetInstance()->SendEvaluatedPossibleMovesEvent(chessPiece->EvaluateMoves(chessTile, this));
 	}
+}
+
+void Chess_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
+{
+	Chess_Tile* toTile = GetTile(anEvent.myToPosition);
+	Chess_Tile* fromTile = GetTile(anEvent.myFromPosition);
+
+	toTile->SetPiece(fromTile->GetPiece());
+	toTile->GetPiece()->SetHasMoved();
+	fromTile->SetPiece(nullptr);
 }

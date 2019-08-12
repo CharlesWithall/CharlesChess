@@ -20,6 +20,7 @@ public:
 
 	Chess_Pieces_Colour GetColour() const { return myColour; }
 	bool GetHasMoved() const { return myHasMoved; }
+	void SetHasMoved() { myHasMoved = true; }
 	const std::vector<Chess_Tile*> EvaluateMoves(const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const
 	{
 		std::vector<Chess_Tile*> outMoves;

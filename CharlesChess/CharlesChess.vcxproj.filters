@@ -49,6 +49,9 @@
     <Filter Include="Source Files\UI\Input">
       <UniqueIdentifier>{1a841bc0-eb4f-473d-9875-3a2c2787427c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI\Input">
+      <UniqueIdentifier>{47c994a4-c4ed-4464-b3a3-a08885b4d82a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI_Tile.h">
@@ -142,7 +145,7 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="UI_Listener_MouseClick.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\UI\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -195,7 +198,7 @@
       <Filter>Source Files\UI\Highlights</Filter>
     </ClCompile>
     <ClCompile Include="UI_Listener_MouseClick.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

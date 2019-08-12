@@ -28,13 +28,11 @@ void UI_Board::Init(Chess_Board* aChessBoard)
 		UI_RankArray& rankArray = myChessTiles[i];
 		for (size_t j = 0; j < rankArray.size(); ++j)
 		{
-			const Chess_File file = Chess_File(j + 1);
-			const int rank = i + 1;
-
+			const Chess_RankAndFile rankAndFile = Chess_RankAndFile(i, j);
 			Chess_Pieces_Colour colour = isWhite ? Chess_Pieces_Colour::WHITE : Chess_Pieces_Colour::BLACK;
-			rankArray[j] = new UI_Tile(colour, file, rank);
+			rankArray[j] = new UI_Tile(colour, rankAndFile);
 
-			if (Chess_Tile* tile = aChessBoard->GetTile(file, rank))
+			if (Chess_Tile* tile = aChessBoard->GetTile(rankAndFile))
 			{
 				if (Chess_Piece* piece = tile->GetPiece())
 				{
@@ -54,6 +52,7 @@ void UI_Board::Init(Chess_Board* aChessBoard)
 
 	// Listeners
 	Event_Handler::GetInstance()->RegisterEvaluatedPossibleMovesListener(this);
+	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
 	myMouseClickListener = new UI_Listener_MouseClick(this);
 }
 
@@ -106,9 +105,9 @@ void UI_Board::ClearPossibleMoves()
 void UI_Board::OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent)
 {
 	const int lastHighlightIndex = myPossibleMoveHighlights.size() - 1;
-	for (int i = 0; i < anEvent.myPossibleMoveIndices.size(); ++i)
+	for (int i = 0; i < anEvent.myPossibleRankAndFiles.size(); ++i)
 	{
-		UI_Tile* possibleTile = myChessTiles[anEvent.myPossibleMoveIndices[i].myRankIndex][anEvent.myPossibleMoveIndices[i].myFileIndex];
+		UI_Tile* possibleTile = GetTile(anEvent.myPossibleRankAndFiles[i]);
 		myPossibleMoves.push_back(possibleTile);
 		const sf::Vector2f tilePosition = possibleTile->GetBackgroundTile().getPosition();
 
@@ -127,8 +126,22 @@ void UI_Board::OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent)
 	}
 }
 
+void UI_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
+{
+	UI_Tile* moveToTile = GetTile(anEvent.myToPosition);
+	UI_Tile* moveFromTile = GetTile(anEvent.myFromPosition);
+
+	moveToTile->SetPiece(moveFromTile->GetPiece());
+	moveFromTile->SetPiece(nullptr);
+
+}
+
 void UI_Board::SetSelectedTile(UI_Tile* aSelectedTile)
 {
 	mySelectedTile = aSelectedTile;
-	mySelectedHighlight->setPosition(aSelectedTile->GetBackgroundTile().getPosition());
+
+	if (mySelectedTile)
+	{
+		mySelectedHighlight->setPosition(mySelectedTile->GetBackgroundTile().getPosition());
+	}
 }

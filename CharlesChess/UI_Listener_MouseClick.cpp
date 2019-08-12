@@ -24,24 +24,52 @@ void UI_Listener_MouseClick::Update(sf::RenderWindow& aWindow)
 
 void UI_Listener_MouseClick::OnMouseClick(sf::RenderWindow& aWindow)
 {
-	myChessBoard->ClearPossibleMoves();
-	UI_Tile* aTile = GetClickedTile(aWindow);
+	const std::vector<UI_Tile*>& possibleMoves = myChessBoard->GetPossibleMoves();
+	UI_Tile* clickedTile = GetClickedTile(aWindow);
+	UI_Tile* selectedTile = myChessBoard->GetSelectedTile();
 
-	if (!aTile)
+	if (!clickedTile)
 	{
 		return;
 	}
 
-	if (!aTile->GetPiece() || myChessBoard->GetSelectedTile() == aTile)
+	// Clear Already Selected Tile
+	if (selectedTile == clickedTile)
 	{
+		myChessBoard->ClearPossibleMoves();
 		myChessBoard->SetSelectedTile(nullptr);
 		return;
 	}
 
-	// Standardise all rank and file gets to be less random, either use rank and file or indices.
-	// aTile->GetRankAndFile
-	// Handle what happens if you click a valid move.
-	Event_Handler::GetInstance()->SendPieceSelectedEvent(, ); // Get Indices from Tile here
+	// Select Piece
+	if (clickedTile->GetPiece())
+	{
+		myChessBoard->ClearPossibleMoves();
+		myChessBoard->SetSelectedTile(clickedTile);
+		Event_Handler::GetInstance()->SendPieceSelectedEvent(clickedTile->GetRankAndFile());
+		return;
+	}
+	
+	// Make Move
+	if (selectedTile)
+	{
+		for (UI_Tile* move : myChessBoard->GetPossibleMoves())
+		{
+			if (move == clickedTile)
+			{
+				Event_Handler::GetInstance()->SendMovePieceRequestEvent(selectedTile->GetRankAndFile(), clickedTile->GetRankAndFile());
+				myChessBoard->SetSelectedTile(nullptr);
+				myChessBoard->ClearPossibleMoves();
+				return;
+			}
+		}
+	}
+	// CPW: TODO: Can't Take pieces
+
+	// If all else fails just clear the board of highlights and selections
+	myChessBoard->SetSelectedTile(nullptr);
+	myChessBoard->ClearPossibleMoves();
+	return;
 }
 
 UI_Tile* UI_Listener_MouseClick::GetClickedTile(sf::RenderWindow& aWindow)

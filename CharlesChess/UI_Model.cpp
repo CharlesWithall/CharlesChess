@@ -13,6 +13,7 @@ UI_Model* UI_Model::GetInstance()
 UI_Model::UI_Model()
 {
 	myPieces = new UI_Pieces();
+	myTurn = Chess_Pieces_Colour::WHITE;
 }
 
 void UI_Model::Run()

@@ -24,7 +24,7 @@ public:
 	// Send Events
 	void SendEvaluatedPossibleMovesEvent(const std::vector<Chess_Tile*>& somePossibleMoves);
 	void SendPieceSelectedEvent(const Chess_RankAndFile& aRankAndFile);
-	void SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition);
+	void SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn);
 
 private:
 	std::vector<Event_Listener_PieceSelected*> myPieceSelectedListeners;

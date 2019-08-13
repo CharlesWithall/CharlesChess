@@ -2,6 +2,8 @@
 
 #include <map>
 
+#include "UI_Model.h"
+
 #include "Chess_Defines.h"
 
 #include "SFML/Graphics.hpp"
@@ -20,5 +22,21 @@ public:
 private:
 	UI_PieceTextureMap myBlackPieceTextures;
 	UI_PieceTextureMap myWhitePieceTextures;
+};
+
+class UI_Piece
+{
+public:
+	UI_Piece(const Chess_Pieces_EnumType aChessPiece, const Chess_Pieces_Colour aColour)
+		: myColour(aColour)
+	{
+		if (sf::Texture* pieceTexture = UI_Model::GetInstance()->GetPieces()->GetPieceTexture(aChessPiece, aColour))
+		{
+			mySprite = sf::Sprite(*pieceTexture);
+		}
+	}
+
+	sf::Sprite mySprite;
+	const Chess_Pieces_Colour myColour;
 };
 

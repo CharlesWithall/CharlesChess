@@ -52,6 +52,9 @@
     <Filter Include="Header Files\UI\Input">
       <UniqueIdentifier>{47c994a4-c4ed-4464-b3a3-a08885b4d82a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Chess\Rules\Special">
+      <UniqueIdentifier>{39d3ebcb-b904-47e2-a100-c3d6c9226942}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI_Tile.h">
@@ -146,6 +149,15 @@
     </ClInclude>
     <ClInclude Include="UI_Listener_MouseClick.h">
       <Filter>Header Files\UI\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Special_EnPassant.h">
+      <Filter>Header Files\Chess\Rules\Special</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Special_Castle.h">
+      <Filter>Header Files\Chess\Rules\Special</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Special.h">
+      <Filter>Header Files\Chess\Rules\Special</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

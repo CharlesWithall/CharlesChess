@@ -24,19 +24,16 @@ UI_Tile::~UI_Tile()
 
 void UI_Tile::InitPiece(Chess_Pieces_EnumType aChessPieceType, Chess_Pieces_Colour aColour)
 {
-	if (sf::Texture* pieceTexture = UI_Model::GetInstance()->GetPieces()->GetPieceTexture(aChessPieceType, aColour))
-	{
-		myPiece = new sf::Sprite(*pieceTexture);
-		myPiece->setPosition(myPosition);
-	}	
+	myPiece = new UI_Piece(aChessPieceType, aColour);
+	myPiece->mySprite.setPosition(myPosition);
 }
 
-void UI_Tile::SetPiece(sf::Sprite* const aPiece)
+void UI_Tile::SetPiece(UI_Piece* const aPiece)
 {
 	myPiece = aPiece;
 
 	if (myPiece)
 	{
-		myPiece->setPosition(myPosition);
+		myPiece->mySprite.setPosition(myPosition);
 	}	
 }

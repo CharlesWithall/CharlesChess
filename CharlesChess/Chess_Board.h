@@ -7,6 +7,7 @@
 #include "Event_Listeners.h"
 
 class Chess_Piece;
+class Chess_Rule_Special;
 class Chess_Tile;
 
 typedef std::array<Chess_Tile*, 8> Chess_RankArray;
@@ -30,7 +31,8 @@ public:
 	void OnMovePieceRequested(const Event_MovePieceRequest& anEvent) override;
 private:
 	Chess_Piece* CreatePiece(const Chess_RankAndFile& aRankAndile);
-	
-	Chess_8x82DArray myChessTiles; // Each array of files contains an array of ranks
+
+	Chess_8x82DArray myChessTiles;
+	std::vector<Chess_Rule_Special*> mySpecialRules;
 };
 

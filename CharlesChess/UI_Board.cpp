@@ -2,6 +2,7 @@
 
 #include "UI_Highlight_PossibleMove.h"
 #include "UI_Listener_MouseClick.h"
+#include "UI_Pieces.h"
 #include "UI_Tile.h"
 
 #include "Event_Handler.h"
@@ -76,9 +77,9 @@ void UI_Board::Draw(sf::RenderWindow& aWindow)
 				aWindow.draw(*mySelectedHighlight);
 			}
 
-			if (sf::Sprite* piece = rank[j]->GetPiece())
+			if (UI_Piece* piece = rank[j]->GetPiece())
 			{
-				aWindow.draw(*piece);
+				aWindow.draw(piece->mySprite);
 			}
 		}
 	}
@@ -134,6 +135,10 @@ void UI_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
 	moveToTile->SetPiece(moveFromTile->GetPiece());
 	moveFromTile->SetPiece(nullptr);
 
+	if (anEvent.myShouldEndTurn)
+	{
+		UI_Model::GetInstance()->SetTurnTaken();
+	}
 }
 
 void UI_Board::SetSelectedTile(UI_Tile* aSelectedTile)

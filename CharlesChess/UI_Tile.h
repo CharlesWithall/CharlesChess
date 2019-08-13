@@ -4,6 +4,8 @@
 
 #include "SFML/Graphics.hpp"
 
+class UI_Piece;
+
 class UI_Tile
 {
 public:
@@ -12,16 +14,16 @@ public:
 
 	sf::RectangleShape& GetBackgroundTile() { return myTile; }
 	
-	sf::Sprite* GetPiece() { return myPiece; }
+	UI_Piece* GetPiece() { return myPiece; }
 	const Chess_RankAndFile& GetRankAndFile() const { return myRankAndFile; }
 	void InitPiece(Chess_Pieces_EnumType aChessPieceType, Chess_Pieces_Colour aColour);
-	void SetPiece(sf::Sprite* const aPiece);
+	void SetPiece(UI_Piece* const aPiece);
 	
 private:
 
 	Chess_Pieces_Colour myColour;
 	sf::RectangleShape myTile;
-	sf::Sprite* myPiece;
+	UI_Piece* myPiece;
 	sf::Vector2f myPosition;
 	Chess_RankAndFile myRankAndFile;
 };

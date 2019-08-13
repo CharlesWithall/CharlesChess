@@ -141,6 +141,9 @@
     <ClInclude Include="Chess_Rule_Pawn_Take.h" />
     <ClInclude Include="Chess_Rule_Queen_Move.h" />
     <ClInclude Include="Chess_Rule_Rook_Move.h" />
+    <ClInclude Include="Chess_Rule_Special.h" />
+    <ClInclude Include="Chess_Rule_Special_Castle.h" />
+    <ClInclude Include="Chess_Rule_Special_EnPassant.h" />
     <ClInclude Include="Chess_Tile.h" />
     <ClInclude Include="Event_Events.h" />
     <ClInclude Include="Event_Handler.h" />

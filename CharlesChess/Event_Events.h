@@ -21,12 +21,14 @@ struct Event_EvaulatedPossibleMoves
 
 struct Event_MovePieceRequest
 {
-	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition)
+	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn)
 		: myFromPosition(aFromPosition)
 		, myToPosition(aToPosition)
+		, myShouldEndTurn(aShouldEndturn)
 	{
 	}
 
 	Chess_RankAndFile myFromPosition;
 	Chess_RankAndFile myToPosition;
+	bool myShouldEndTurn;
 };

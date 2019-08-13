@@ -1,6 +1,7 @@
 #include "UI_Listener_MouseClick.h"
 
 #include "UI_Board.h"
+#include "UI_Pieces.h"
 #include "UI_Tile.h"
 
 #include "Event_Handler.h"
@@ -41,8 +42,13 @@ void UI_Listener_MouseClick::OnMouseClick(sf::RenderWindow& aWindow)
 		return;
 	}
 
+	UI_Piece* clickedPiece = clickedTile->GetPiece();
+	UI_Piece* selectedPiece = selectedTile ? selectedTile->GetPiece() : nullptr;
+	const bool playerIsTakingPiece = selectedPiece && clickedPiece && selectedPiece->myColour != clickedPiece->myColour;
+	const bool clickedPieceOwnedByPlayer = clickedPiece && clickedPiece->myColour == UI_Model::GetInstance()->GetTurn();
+
 	// Select Piece
-	if (clickedTile->GetPiece())
+	if (clickedTile->GetPiece() && !playerIsTakingPiece && clickedPieceOwnedByPlayer)
 	{
 		myChessBoard->ClearPossibleMoves();
 		myChessBoard->SetSelectedTile(clickedTile);
@@ -57,16 +63,14 @@ void UI_Listener_MouseClick::OnMouseClick(sf::RenderWindow& aWindow)
 		{
 			if (move == clickedTile)
 			{
-				Event_Handler::GetInstance()->SendMovePieceRequestEvent(selectedTile->GetRankAndFile(), clickedTile->GetRankAndFile());
+				Event_Handler::GetInstance()->SendMovePieceRequestEvent(selectedTile->GetRankAndFile(), clickedTile->GetRankAndFile(), true);
 				myChessBoard->SetSelectedTile(nullptr);
 				myChessBoard->ClearPossibleMoves();
 				return;
 			}
 		}
 	}
-	// CPW: TODO: Can't Take pieces
-
-	// If all else fails just clear the board of highlights and selections
+	
 	myChessBoard->SetSelectedTile(nullptr);
 	myChessBoard->ClearPossibleMoves();
 	return;

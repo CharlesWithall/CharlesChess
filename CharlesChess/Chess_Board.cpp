@@ -10,6 +10,7 @@
 //
 
 #include "Chess_Defines.h"
+#include "Chess_Rule_Special_Castle.h"
 #include "Chess_Tile.h"
 
 #include "Event_Handler.h"
@@ -21,6 +22,9 @@ Chess_Board::Chess_Board()
 
 	Event_Handler::GetInstance()->RegisterPieceSelectedListener(this);
 	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
+
+	mySpecialRules.push_back(new Chess_Rule_Special_Castle());
+	//mySpecialRules.push_back(new Chess_Rule_Special_EnPassant());
 }
 
 Chess_Board::~Chess_Board()
@@ -39,6 +43,11 @@ Chess_Board::~Chess_Board()
 				delete tile;
 			}
 		}
+	}
+
+	for (Chess_Rule_Special* rule : mySpecialRules)
+	{
+		if (rule) delete rule;
 	}
 }
 
@@ -122,4 +131,9 @@ void Chess_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
 	toTile->SetPiece(fromTile->GetPiece());
 	toTile->GetPiece()->SetHasMoved();
 	fromTile->SetPiece(nullptr);
+
+	for (Chess_Rule_Special* rule : mySpecialRules)
+	{
+		rule->Evaluate(fromTile, toTile, this);
+	}
 }

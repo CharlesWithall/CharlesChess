@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "Chess_Board.h"
-#include "Chess_Piece.h"
 #include "Chess_Tile.h"
 
 class Chess_Rule

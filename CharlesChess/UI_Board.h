@@ -15,7 +15,11 @@ class UI_Tile;
 typedef std::array<UI_Tile*, 8> UI_RankArray;
 typedef std::array<UI_RankArray, 8> UI_8x82DArray;
 
-class UI_Board : Event_Listener_EvaluatedPossibleMoves, Event_Listener_MovePieceRequest
+class UI_Board
+	: Event_Listener_EvaluatedPossibleMoves
+	, Event_Listener_MovePieceRequest
+	, Event_Listener_ReplacePieceRequest
+	, Event_Listener_RemovePieceRequest
 {
 public:
 	~UI_Board();
@@ -37,6 +41,8 @@ private:
 
 	void OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent) override;
 	void OnMovePieceRequested(const Event_MovePieceRequest& anEvent) override;
+	void OnRemovePieceRequested(const Event_RemovePieceRequest& anEvent) override;
+	void OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent) override;
 
 	UI_8x82DArray myChessTiles; // Each array of files contains an array of ranks
 	

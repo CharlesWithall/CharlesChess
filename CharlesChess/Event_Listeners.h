@@ -19,3 +19,21 @@ class Event_Listener_MovePieceRequest
 public:
 	virtual void OnMovePieceRequested(const Event_MovePieceRequest& anEvent) = 0;
 };
+
+class Event_Listener_RemovePieceRequest
+{
+public:
+	virtual void OnRemovePieceRequested(const Event_RemovePieceRequest& anEvent) = 0;
+};
+
+class Event_Listener_ReplacePieceRequest
+{
+public:
+	virtual void OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent) = 0;
+};
+
+class Event_Listener_GameOver
+{
+public:
+	virtual void OnGameOver(const Event_GameOver& anEvent) = 0;
+};

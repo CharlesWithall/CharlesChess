@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Chess_Check_Rule.h"
 #include "Chess_Defines.h"
 #include "Chess_Rule.h"
 
@@ -42,10 +43,20 @@ private:
 				{
 					return;
 				}
-
-
 			}
 		}
+
+		const Chess_Piece* const king = anOriginTile ? anOriginTile->GetPiece() : nullptr;
+		const Chess_Check_Rule& checkRuleHandler = king->GetCheckRuleHandler();
+
+		if (!king)
+			return;
+
+		if (checkRuleHandler.Evaluate(aChessBoard, king->GetColour()))
+			return;
+
+		if (checkRuleHandler.EvaluateTheoretical(aChessBoard, king->GetColour(), aChessBoard->GetRelativeTile(anOriginTile, kingSideSelectionOffset / 2, 0), anOriginTile))
+			return;
 
 		anOutMoveList.push_back(aChessBoard->GetRelativeTile(anOriginTile, kingSideSelectionOffset, 0));
 	}
@@ -71,11 +82,23 @@ private:
 				{
 					return;
 				}
-
-
 			}
 		}
 
+		const Chess_Piece* const king = anOriginTile ? anOriginTile->GetPiece() : nullptr;
+		const Chess_Check_Rule& checkRuleHandler = king->GetCheckRuleHandler();
+
+		if (!king)
+			return;
+
+		if (checkRuleHandler.Evaluate(aChessBoard, king->GetColour()))
+			return;
+
+		if (checkRuleHandler.EvaluateTheoretical(aChessBoard, king->GetColour(), aChessBoard->GetRelativeTile(anOriginTile, queenSideSelectionOffset / 2, 0), anOriginTile))
+			return;
+
 		anOutMoveList.push_back(aChessBoard->GetRelativeTile(anOriginTile, queenSideSelectionOffset, 0));
 	}
+
+	bool ShouldEvaluateForCheck() const override { return false; }
 };

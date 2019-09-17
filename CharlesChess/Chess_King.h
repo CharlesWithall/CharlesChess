@@ -18,6 +18,6 @@ public:
 	char GetConsoleIdentifier() const override { return 'K'; };
 	std::string GetName() const override { return "King"; };
 	Chess_Pieces_EnumType GetType() const override { return Chess_Pieces_EnumType::KING; };
-	int GetScore() const override { return INT_MAX; };
+	int GetScore() const override { return 900; };
 };
 

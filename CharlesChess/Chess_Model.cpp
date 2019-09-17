@@ -4,13 +4,24 @@
 
 Chess_Model* Chess_Model::myInstance = nullptr;
 
+Chess_Model::~Chess_Model()
+{
+	if (myChessBoard) delete myChessBoard;
+}
+
 Chess_Model::Chess_Model()
 {
-	myChessBoard = new Chess_Board();
+	Reset();
 }
 
 Chess_Model* Chess_Model::GetInstance()
 {
 	if (myInstance == nullptr)	myInstance = new Chess_Model();
 	return myInstance;
+}
+
+void Chess_Model::Reset()
+{
+	if (myChessBoard) delete myChessBoard;
+	myChessBoard = new Chess_Board();
 }

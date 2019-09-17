@@ -21,12 +21,13 @@ public:
 		for (Chess_Rule* rule : myChessRules)
 		{
 			delete rule;
+			rule = nullptr;
 		}
 	};
 
 	char GetConsoleIdentifier() const override { return 'P'; };
 	std::string GetName() const override { return "Pawn"; };
 	Chess_Pieces_EnumType GetType() const override { return Chess_Pieces_EnumType::PAWN; };
-	int GetScore() const override { return 1; };
+	int GetScore() const override { return 10; };
 };
 

@@ -1,11 +1,8 @@
 #pragma once
 
 #include "Chess_Defines.h"
+#include "Chess_Move.h"
 #include "Chess_Rule.h"
-
-////////////////////////////
-////// Work In Progress ////
-////////////////////////////
 
 class Chess_Rule_Pawn_EnPassant : public Chess_Rule
 {
@@ -13,19 +10,32 @@ public:
 	std::vector<Chess_Tile*> Evaluate(const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const override
 	{
 		std::vector<Chess_Tile*> outVector;
-		//Chess_Piece* piece = anOriginTile->GetPiece();
-		//
-		//if (Chess_Tile* leftTile = aChessBoard->GetRelativeTile(anOriginTile, -1, 0))
-		//{
-		//	// Need to get last move somehow
-		//}
-		//
-		//if (Chess_Tile* rightTile = aChessBoard->GetRelativeTile(anOriginTile, 1, 0))
-		//{
-		//	// Need to get last move
-		//}
+		Chess_Piece* piece = anOriginTile->GetPiece();
 
-		////const int offset = piece->GetColour() == Chess_Pieces_Colour::WHITE ? 1 : -1;
+		const Chess_Move* const lastMove = aChessBoard->GetLatestMove();
+		const bool lastMoveWasPawnDoubleMove = lastMove && lastMove->myPiece == Chess_Pieces_EnumType::PAWN && std::abs(lastMove->myFromTile.myRank - lastMove->myToTile.myRank) == 2;
+		if (lastMoveWasPawnDoubleMove)
+		{
+			const int offset = piece->GetColour() == Chess_Pieces_Colour::WHITE ? 1 : -1;
+
+			if (Chess_Tile* leftTile = aChessBoard->GetRelativeTile(anOriginTile, -1, 0))
+			{
+				if (leftTile && leftTile->GetRankAndFile() == lastMove->myToTile)
+				{
+					outVector.push_back(aChessBoard->GetRelativeTile(anOriginTile, -1, offset));
+				}
+			}
+
+			if (Chess_Tile* rightTile = aChessBoard->GetRelativeTile(anOriginTile, 1, 0))
+			{
+				if (rightTile && rightTile->GetRankAndFile() == lastMove->myToTile)
+				{
+					outVector.push_back(aChessBoard->GetRelativeTile(anOriginTile, 1, offset));
+				}
+			}
+		}
+
 		return outVector;
 	}
 };
+		

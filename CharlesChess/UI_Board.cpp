@@ -1,5 +1,6 @@
 #include "UI_Board.h"
 
+#include "UI_Defines.h"
 #include "UI_Highlight_PossibleMove.h"
 #include "UI_Listener_MouseClick.h"
 #include "UI_Pieces.h"
@@ -11,13 +12,29 @@
 #include "Chess_Piece.h"
 #include "Chess_Tile.h"
 
+#include "AI_Model.h"
+
 UI_Board::~UI_Board()
 {
+	if (mySelectedTile) delete mySelectedTile;
 	if (mySelectedHighlight) delete mySelectedHighlight;
+
+	for (UI_Tile* move : myPossibleMoves)
+	{
+		delete move;
+	}
+
 	for (UI_Highlight_PossibleMove* highlight : myPossibleMoveHighlights)
 	{
 		delete highlight;
 	}
+
+	if (myMouseClickListener) delete myMouseClickListener;
+
+	Event_Handler::GetInstance()->UnregisterEvaluatedPossibleMovesListener(this);
+	Event_Handler::GetInstance()->UnregisterMovePieceRequestListener(this);
+	Event_Handler::GetInstance()->UnregisterReplacePieceRequestListener(this);
+	Event_Handler::GetInstance()->UnregisterRemovePieceRequestListener(this);
 };
 
 void UI_Board::Init(Chess_Board* aChessBoard)
@@ -48,19 +65,35 @@ void UI_Board::Init(Chess_Board* aChessBoard)
 
 	// Highlights
 	mySelectedHighlight = new sf::RectangleShape();
-	mySelectedHighlight->setFillColor(sf::Color(60, 118, 67, 120));
-	mySelectedHighlight->setSize(sf::Vector2f(100, 100));
+	mySelectedHighlight->setFillColor(theTileSelectedHighlightColour);
+	mySelectedHighlight->setSize(theNativeTileSize);
 
 	// Listeners
 	Event_Handler::GetInstance()->RegisterEvaluatedPossibleMovesListener(this);
 	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
+	Event_Handler::GetInstance()->RegisterReplacePieceRequestListener(this);
+	Event_Handler::GetInstance()->RegisterRemovePieceRequestListener(this);
 	myMouseClickListener = new UI_Listener_MouseClick(this);
 }
 
 void UI_Board::Update(sf::RenderWindow& aWindow)
 {
 	Draw(aWindow);
-	myMouseClickListener->Update(aWindow);
+
+	UI_Model* model = UI_Model::GetInstance();
+	if (model->IsMenuOpen())
+	{
+		return;
+	}
+
+	if (model->GetIsPlayingAgainstComputer() && model->GetMyAIColour() == model->GetTurn())
+	{
+		AI_Model::GetInstance()->RequestAndMakeMove();
+	}
+	else
+	{
+		myMouseClickListener->Update(aWindow);
+	}
 }
 
 void UI_Board::Draw(sf::RenderWindow& aWindow)
@@ -106,7 +139,7 @@ void UI_Board::ClearPossibleMoves()
 void UI_Board::OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent)
 {
 	const int lastHighlightIndex = myPossibleMoveHighlights.size() - 1;
-	for (int i = 0; i < anEvent.myPossibleRankAndFiles.size(); ++i)
+	for (int i = 0; i < (int)anEvent.myPossibleRankAndFiles.size(); ++i)
 	{
 		UI_Tile* possibleTile = GetTile(anEvent.myPossibleRankAndFiles[i]);
 		myPossibleMoves.push_back(possibleTile);
@@ -148,5 +181,33 @@ void UI_Board::SetSelectedTile(UI_Tile* aSelectedTile)
 	if (mySelectedTile)
 	{
 		mySelectedHighlight->setPosition(mySelectedTile->GetBackgroundTile().getPosition());
+	}
+}
+
+void UI_Board::OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent)
+{
+	if (anEvent.myFromPieceType != Chess_Pieces_EnumType::INVALID && anEvent.myToPieceType != Chess_Pieces_EnumType::INVALID)
+	{
+		if (UI_Tile* replaceTile = GetTile(anEvent.myRankAndFile))
+		{
+			if (UI_Piece* piece = replaceTile->GetPiece())
+			{
+				delete replaceTile->GetPiece();
+			}
+
+			replaceTile->SetPiece(new UI_Piece(anEvent.myToPieceType, anEvent.myColour));
+		}
+	}
+}
+
+void UI_Board::OnRemovePieceRequested(const Event_RemovePieceRequest& anEvent)
+{
+	if (UI_Tile* removeTile = GetTile(anEvent.myRankAndFile))
+	{
+		if (UI_Piece* piece = removeTile->GetPiece())
+		{
+			delete removeTile->GetPiece();
+			removeTile->SetPiece(nullptr);
+		}
 	}
 }

@@ -16,5 +16,5 @@ public:
 	char GetConsoleIdentifier() const override { return 'Q'; };
 	std::string GetName() const override { return "Queen"; };
 	Chess_Pieces_EnumType GetType() const override { return Chess_Pieces_EnumType::QUEEN; };
-	int GetScore() const override { return 9; };
+	int GetScore() const override { return 90; };
 };

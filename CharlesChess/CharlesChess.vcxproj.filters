@@ -34,9 +34,6 @@
     <Filter Include="Header Files\Chess\Rules">
       <UniqueIdentifier>{911cd7fa-cf4b-4599-86e8-31db9bad718a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Events">
-      <UniqueIdentifier>{492b767b-ef88-4562-a23b-7f8cfa2c96c7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Events">
       <UniqueIdentifier>{bc605497-2ac6-4645-98af-9709b4b07e9a}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,39 @@
     </Filter>
     <Filter Include="Header Files\Chess\Rules\Special">
       <UniqueIdentifier>{39d3ebcb-b904-47e2-a100-c3d6c9226942}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Chess\Rules\Check">
+      <UniqueIdentifier>{add1149e-04bd-4531-a2c7-7b4ec8560d6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Chess\Rules">
+      <UniqueIdentifier>{633157f0-68de-494b-85c6-72e3f8b849fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Chess\Rules\Check">
+      <UniqueIdentifier>{8982d944-166f-4c62-85fc-1bd926a620ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{492b767b-ef88-4562-a23b-7f8cfa2c96c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Chess\Rules\GameOver">
+      <UniqueIdentifier>{42aa0bfe-0a21-4716-833b-614d6a54beda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Main Menu">
+      <UniqueIdentifier>{7258a7d2-8b5e-40cb-bed7-a17065b7fb32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Main Menu">
+      <UniqueIdentifier>{60e4e7b0-7f17-4155-9d14-096bcdf30cd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI">
+      <UniqueIdentifier>{ce2355b6-9e00-452a-980d-277575ac80ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{44669597-8131-4526-bb91-d4e2fce5eb3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Debug">
+      <UniqueIdentifier>{9cf73577-171a-4df7-8178-168fe03b87a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debug">
+      <UniqueIdentifier>{01d07b34-5bb6-4cd0-8180-389b546e5af6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +189,60 @@
     <ClInclude Include="Chess_Rule_Special.h">
       <Filter>Header Files\Chess\Rules\Special</Filter>
     </ClInclude>
+    <ClInclude Include="Chess_Check_Rule.h">
+      <Filter>Header Files\Chess\Rules\Check</Filter>
+    </ClInclude>
+    <ClInclude Include="Event_Defines.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_Special_PawnPromotion.h">
+      <Filter>Header Files\Chess\Rules\Special</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_PawnPromotion.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Move.h">
+      <Filter>Header Files\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_GameOver.h">
+      <Filter>Header Files\Chess\Rules\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_GameOver_StaleMate_MoveRepetition.h">
+      <Filter>Header Files\Chess\Rules\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_GameOver_StaleMate_50Moves.h">
+      <Filter>Header Files\Chess\Rules\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_MainMenu.h">
+      <Filter>Header Files\UI\Main Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_MainMenu_Button.h">
+      <Filter>Header Files\UI\Main Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_MainMenu_Graphics.h">
+      <Filter>Header Files\UI\Main Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_GameOver_NoMoves.h">
+      <Filter>Header Files\Chess\Rules\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Rule_GameOver_NotEnoughPieces.h">
+      <Filter>Header Files\Chess\Rules\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Model.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Analysis.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Evaluate.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Defines.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug_Profiler.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI_Board.cpp">
@@ -211,6 +295,33 @@
     </ClCompile>
     <ClCompile Include="UI_Listener_MouseClick.cpp">
       <Filter>Source Files\UI\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Check_Rule.cpp">
+      <Filter>Source Files\Chess\Rules\Check</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Piece.cpp">
+      <Filter>Source Files\Chess\Pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_PawnPromotion.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_MainMenu.cpp">
+      <Filter>Source Files\UI\Main Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_MainMenu_Button.cpp">
+      <Filter>Source Files\UI\Main Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_Model.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_Analysis.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_Evaluate.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug_Profiler.cpp">
+      <Filter>Source Files\Debug</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

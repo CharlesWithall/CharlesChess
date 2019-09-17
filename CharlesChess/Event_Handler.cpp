@@ -39,12 +39,52 @@ void Event_Handler::SendEvaluatedPossibleMovesEvent(const std::vector<Chess_Tile
 	}
 }
 
-void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn)
+void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn, const Event_Source anEventSource)
 {
+	if (anEventSource == Event_Source::EVALUATION)
+	{
+		return;
+	}
+
 	Event_MovePieceRequest movePieceRequest = Event_MovePieceRequest(aFromPosition, aToPosition, aShouldEndturn);
 
 	for (Event_Listener_MovePieceRequest* listener : myMovePieceRequestListeners)
 	{
 		listener->OnMovePieceRequested(movePieceRequest);
+	}
+}
+
+void Event_Handler::SendReplacePieceRequestEvent(const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour, const Chess_Pieces_EnumType aFromPieceType, const Chess_Pieces_EnumType aToPieceType)
+{
+	Event_ReplacePieceRequest replacePieceRequest = Event_ReplacePieceRequest(aRankAndFile, aColour, aFromPieceType, aToPieceType);
+
+	for (Event_Listener_ReplacePieceRequest* listener : myReplacePieceRequestListeners)
+	{
+		listener->OnReplacePieceRequested(replacePieceRequest);
+	}
+}
+
+void Event_Handler::SendRemovePieceRequestEvent(const Chess_RankAndFile& aRankAndFile, const Event_Source anEventSource)
+{
+	if (anEventSource == Event_Source::EVALUATION)
+	{
+		return;
+	}
+
+	Event_RemovePieceRequest removePieceRequest = Event_RemovePieceRequest(aRankAndFile);
+
+	for (Event_Listener_RemovePieceRequest* listener : myRemovePieceRequestListeners)
+	{
+		listener->OnRemovePieceRequested(removePieceRequest);
+	}
+}
+
+void Event_Handler::SendGameOverEvent(const Chess_GameOverResult aGameOverResult)
+{
+	Event_GameOver gameOver = Event_GameOver(aGameOverResult);
+
+	for (Event_Listener_GameOver* listener : myGameOverListeners)
+	{
+		listener->OnGameOver(gameOver);
 	}
 }

@@ -16,6 +16,6 @@ public:
 	char GetConsoleIdentifier() const override { return 'R'; };
 	std::string GetName() const override { return "Rook"; };
 	Chess_Pieces_EnumType GetType() const override { return Chess_Pieces_EnumType::ROOK; };
-	int GetScore() const override { return 5; };
+	int GetScore() const override { return 50; };
 };
 

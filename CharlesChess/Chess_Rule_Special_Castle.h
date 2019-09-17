@@ -3,12 +3,13 @@
 #include "Chess_Defines.h"
 #include "Chess_Rule_Special.h"
 
+#include "Event_Defines.h"
 #include "Event_Handler.h"
 
 class Chess_Rule_Special_Castle : public Chess_Rule_Special
 {
 public:
-	void Evaluate(const Chess_Tile* const aFromTile, const Chess_Tile* const aToTile, Chess_Board* const aChessBoard) const override
+	void Evaluate(const Chess_Tile* const aFromTile, const Chess_Tile* const aToTile, const Chess_Pieces_EnumType /*aTakenPieceType*/, Chess_Board* const aChessBoard, const Event_Source anEventSource) const override
 	{
 		Chess_Piece* piece = aToTile ? aToTile->GetPiece() : nullptr;
 
@@ -25,7 +26,7 @@ public:
 				Chess_RankAndFile from = Chess_RankAndFile(rookLocation, rank);
 				Chess_RankAndFile to = Chess_RankAndFile(aFromTileFile + 1, rank);
 
-				Event_Handler::GetInstance()->SendMovePieceRequestEvent(from, to, false);
+				Event_Handler::GetInstance()->SendMovePieceRequestEvent(from, to, false, anEventSource);
 			}
 
 			if (aToTileFile - aFromTileFile == -2)
@@ -36,7 +37,7 @@ public:
 				Chess_RankAndFile from = Chess_RankAndFile(rookLocation, rank);
 				Chess_RankAndFile to = Chess_RankAndFile(aFromTileFile - 1, rank);
 
-				Event_Handler::GetInstance()->SendMovePieceRequestEvent(from, to, false);
+				Event_Handler::GetInstance()->SendMovePieceRequestEvent(from, to, false, anEventSource);
 			}
 		}
 	}

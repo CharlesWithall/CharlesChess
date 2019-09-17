@@ -4,6 +4,7 @@
 
 enum Chess_Pieces_EnumType
 {
+	INVALID,
 	BISHOP,
 	KING,
 	KNIGHT,
@@ -16,6 +17,20 @@ enum Chess_Pieces_Colour
 {
 	WHITE,
 	BLACK
+};
+
+enum Chess_Source
+{
+	MOVE_REQUEST,
+	CHECK_EVALUATION,
+	GAME_OVER_EVALUATION
+};
+
+enum Chess_GameOverResult
+{
+	STALEMATE,
+	WHITEWINS,
+	BLACKWINS
 };
 
 class Chess_RankAndFile
@@ -37,7 +52,7 @@ public:
 
 			if (IsValid())
 			{
-				myReadableName = std::string(files[myFile], ranks[myRank]);
+				myReadableName = std::string() + files[myFile] + ranks[myRank];
 			}
 			else
 			{
@@ -56,6 +71,16 @@ public:
 	bool IsValid() const
 	{
 		return myFile >= 0 && myFile < 8 && myRank >= 0 && myRank < 8;
+	}
+
+	bool operator==(const Chess_RankAndFile& rhs) const
+	{
+		if (myFile == rhs.myFile && myRank == rhs.myRank)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	int myFile;

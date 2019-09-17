@@ -63,7 +63,7 @@ void UI_Listener_MouseClick::OnMouseClick(sf::RenderWindow& aWindow)
 		{
 			if (move == clickedTile)
 			{
-				Event_Handler::GetInstance()->SendMovePieceRequestEvent(selectedTile->GetRankAndFile(), clickedTile->GetRankAndFile(), true);
+				Event_Handler::GetInstance()->SendMovePieceRequestEvent(selectedTile->GetRankAndFile(), clickedTile->GetRankAndFile(), true, Event_Source::DEFAULT);
 				myChessBoard->SetSelectedTile(nullptr);
 				myChessBoard->ClearPossibleMoves();
 				return;

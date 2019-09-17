@@ -121,18 +121,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AI_Analysis.h" />
+    <ClInclude Include="AI_Defines.h" />
+    <ClInclude Include="AI_Evaluate.h" />
+    <ClInclude Include="AI_Model.h" />
     <ClInclude Include="Chess_Bishop.h" />
     <ClInclude Include="Chess_Board.h" />
+    <ClInclude Include="Chess_Check_Rule.h" />
     <ClInclude Include="Chess_Defines.h" />
     <ClInclude Include="Chess_King.h" />
     <ClInclude Include="Chess_Knight.h" />
     <ClInclude Include="Chess_Model.h" />
+    <ClInclude Include="Chess_Move.h" />
     <ClInclude Include="Chess_Pawn.h" />
     <ClInclude Include="Chess_Piece.h" />
     <ClInclude Include="Chess_Queen.h" />
     <ClInclude Include="Chess_Rook.h" />
     <ClInclude Include="Chess_Rule.h" />
     <ClInclude Include="Chess_Rule_Bishop_Move.h" />
+    <ClInclude Include="Chess_Rule_GameOver.h" />
+    <ClInclude Include="Chess_Rule_GameOver_NoMoves.h" />
+    <ClInclude Include="Chess_Rule_GameOver_StaleMate_50Moves.h" />
+    <ClInclude Include="Chess_Rule_GameOver_StaleMate_MoveRepetition.h" />
+    <ClInclude Include="Chess_Rule_GameOver_NotEnoughPieces.h" />
     <ClInclude Include="Chess_Rule_King_Castle.h" />
     <ClInclude Include="Chess_Rule_King_Move.h" />
     <ClInclude Include="Chess_Rule_Knight_Move.h" />
@@ -144,7 +155,10 @@
     <ClInclude Include="Chess_Rule_Special.h" />
     <ClInclude Include="Chess_Rule_Special_Castle.h" />
     <ClInclude Include="Chess_Rule_Special_EnPassant.h" />
+    <ClInclude Include="Chess_Rule_Special_PawnPromotion.h" />
     <ClInclude Include="Chess_Tile.h" />
+    <ClInclude Include="Debug_Profiler.h" />
+    <ClInclude Include="Event_Defines.h" />
     <ClInclude Include="Event_Events.h" />
     <ClInclude Include="Event_Handler.h" />
     <ClInclude Include="Event_Listeners.h" />
@@ -152,26 +166,39 @@
     <ClInclude Include="UI_Defines.h" />
     <ClInclude Include="UI_Highlight_PossibleMove.h" />
     <ClInclude Include="UI_Listener_MouseClick.h" />
+    <ClInclude Include="UI_MainMenu.h" />
+    <ClInclude Include="UI_MainMenu_Button.h" />
+    <ClInclude Include="UI_MainMenu_Graphics.h" />
     <ClInclude Include="UI_Model.h" />
+    <ClInclude Include="UI_PawnPromotion.h" />
     <ClInclude Include="UI_Pieces.h" />
     <ClInclude Include="UI_Tile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AI_Analysis.cpp" />
+    <ClCompile Include="AI_Evaluate.cpp" />
+    <ClCompile Include="AI_Model.cpp" />
     <ClCompile Include="Chess_Bishop.cpp" />
     <ClCompile Include="Chess_Board.cpp" />
+    <ClCompile Include="Chess_Check_Rule.cpp" />
     <ClCompile Include="Chess_King.cpp" />
     <ClCompile Include="Chess_Knight.cpp" />
     <ClCompile Include="Chess_Model.cpp" />
     <ClCompile Include="Chess_Pawn.cpp" />
+    <ClCompile Include="Chess_Piece.cpp" />
     <ClCompile Include="Chess_Queen.cpp" />
     <ClCompile Include="Chess_Rook.cpp" />
     <ClCompile Include="Chess_Tile.cpp" />
+    <ClCompile Include="Debug_Profiler.cpp" />
     <ClCompile Include="Event_Handler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UI_Board.cpp" />
     <ClCompile Include="UI_Highlight_PossibleMove.cpp" />
     <ClCompile Include="UI_Listener_MouseClick.cpp" />
+    <ClCompile Include="UI_MainMenu.cpp" />
+    <ClCompile Include="UI_MainMenu_Button.cpp" />
     <ClCompile Include="UI_Model.cpp" />
+    <ClCompile Include="UI_PawnPromotion.cpp" />
     <ClCompile Include="UI_Pieces.cpp" />
     <ClCompile Include="UI_Tile.cpp" />
   </ItemGroup>

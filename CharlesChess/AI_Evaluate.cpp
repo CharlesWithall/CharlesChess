@@ -22,16 +22,19 @@ AI_Evaluate::~AI_Evaluate()
 {
 }
 
-void AI_Evaluate::EvaluateBestMoves(const Chess_Board* const aChessBoard)
+void AI_Evaluate::EvaluateBestMoves(Chess_Board* const aChessBoard)
 {
 	myBestMoves.clear();
-	mySearchDepth = theMinimumEvaluationDepth;// GetVariableDepthSearch(aChessBoard);
+	mySearchDepth = 3;// theMinimumEvaluationDepth;// GetVariableDepthSearch(aChessBoard);
 	Evaluate(aChessBoard, aChessBoard->GetActivePlayer(), mySearchDepth, -theMaxFloatValue, theMaxFloatValue);
 	Debug_Profiler::QueryAverageTimes();
 	Debug_Profiler::QueryTotalTimes();
 }
 
-const float AI_Evaluate::Evaluate(const Chess_Board* const aChessBoard, const Chess_Pieces_Colour aMaximizingColour, const int aSearchIndex, float anAlphaPrune, float aBetaPrune)
+// Check Mate ignored sometimes?!
+// castling  not workinh
+
+const float AI_Evaluate::Evaluate(Chess_Board* const aChessBoard, const Chess_Pieces_Colour aMaximizingColour, const int aSearchIndex, float anAlphaPrune, float aBetaPrune)
 {
 	if (aSearchIndex == 0)
 	{
@@ -60,10 +63,10 @@ const float AI_Evaluate::Evaluate(const Chess_Board* const aChessBoard, const Ch
 		for (const Chess_Move_Simple& move : possibleMoves)
 		{
 			// Evaluate Move
-			Chess_Board evalChessBoard = *aChessBoard;
-			evalChessBoard.MovePiece(evalChessBoard.GetTile(move.myToTile), evalChessBoard.GetTile(move.myFromTile), Event_Source::EVALUATION);
-			const float evaluation = Evaluate(&evalChessBoard, evalMaximizeColour, aSearchIndex - 1, anAlphaPrune, aBetaPrune);
-			
+			aChessBoard->MovePiece(aChessBoard->GetTile(move.myToTile), aChessBoard->GetTile(move.myFromTile), Event_Source::EVALUATION, true);
+			const float evaluation = Evaluate(aChessBoard, evalMaximizeColour, aSearchIndex - 1, anAlphaPrune, aBetaPrune);
+			aChessBoard->TakeBackLastMove(Event_Source::EVALUATION);
+
 			// Add Best Moves To List
 			if (evaluation > value)
 			{
@@ -98,9 +101,9 @@ const float AI_Evaluate::Evaluate(const Chess_Board* const aChessBoard, const Ch
 		for (const Chess_Move_Simple& move : possibleMoves)
 		{
 			// Evaluate Move
-			Chess_Board evalChessBoard = *aChessBoard;
-			evalChessBoard.MovePiece(evalChessBoard.GetTile(move.myToTile), evalChessBoard.GetTile(move.myFromTile), Event_Source::EVALUATION);
-			value = std::min(value, Evaluate(&evalChessBoard, evalMaximizeColour, aSearchIndex - 1, anAlphaPrune, aBetaPrune));
+			aChessBoard->MovePiece(aChessBoard->GetTile(move.myToTile), aChessBoard->GetTile(move.myFromTile), Event_Source::EVALUATION, true);
+			value = std::min(value, Evaluate(aChessBoard, evalMaximizeColour, aSearchIndex - 1, anAlphaPrune, aBetaPrune));
+			aChessBoard->TakeBackLastMove(Event_Source::EVALUATION);
 
 			// Do Pruning
 			aBetaPrune = std::min(aBetaPrune, value);

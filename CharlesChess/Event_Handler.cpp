@@ -41,12 +41,7 @@ void Event_Handler::SendEvaluatedPossibleMovesEvent(const std::vector<Chess_Tile
 
 void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn, const Event_Source anEventSource)
 {
-	if (anEventSource == Event_Source::EVALUATION)
-	{
-		return;
-	}
-
-	Event_MovePieceRequest movePieceRequest = Event_MovePieceRequest(aFromPosition, aToPosition, aShouldEndturn);
+	Event_MovePieceRequest movePieceRequest = Event_MovePieceRequest(aFromPosition, aToPosition, anEventSource, aShouldEndturn);
 
 	for (Event_Listener_MovePieceRequest* listener : myMovePieceRequestListeners)
 	{

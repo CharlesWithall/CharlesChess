@@ -3,6 +3,8 @@
 #include "UI_MainMenu.h"
 #include "UI_Pieces.h"
 
+#include "Chess_Board.h"
+
 #include "Event_Handler.h"
 
 UI_Model* UI_Model::myInstance = nullptr;
@@ -54,6 +56,7 @@ void UI_Model::Run()
 		}
 
 		HandleEscapeKeyPress();
+		HandleBackspaceKeyPress();
 
 		window.clear();
 		myUIBoard->Update(window);
@@ -127,6 +130,23 @@ void UI_Model::HandleEscapeKeyPress()
 		{
 			myMainMenu = new UI_MainMenu(true);
 		}
+	}
+}
+
+void UI_Model::HandleBackspaceKeyPress()
+{
+	static bool isKeyPressed = false;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))
+	{
+		if (!isKeyPressed)
+		{
+			Chess_Model::GetInstance()->GetChessBoard()->TakeBackLastMove(Event_Source::DEFAULT);
+			isKeyPressed = true;
+		}
+	}
+	else
+	{
+		isKeyPressed = false;
 	}
 }
 

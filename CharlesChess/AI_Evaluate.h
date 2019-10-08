@@ -13,11 +13,11 @@ public:
 	AI_Evaluate(const Chess_Pieces_Colour aMaximizingcolour);
 	~AI_Evaluate();
 
-	void EvaluateBestMoves(const Chess_Board* const aChessBoard);
+	void EvaluateBestMoves(Chess_Board* const aChessBoard);
 	const std::vector<Chess_Move_Simple>& GetBestMoves() const { return myBestMoves; }
 private:
 	const float Evaluate(
-		const Chess_Board* const aChessBoard,
+		Chess_Board* const aChessBoard,
 		const Chess_Pieces_Colour aMaximizingColour,
 		const int aSearchIndex,
 		float anAlphaPrune,

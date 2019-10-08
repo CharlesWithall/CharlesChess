@@ -36,7 +36,7 @@ public:
 	void UnregisterRemovePieceRequestListener(Event_Listener_RemovePieceRequest* aListener) { myRemovePieceRequestListeners.erase(std::remove(myRemovePieceRequestListeners.begin(), myRemovePieceRequestListeners.end(), aListener), myRemovePieceRequestListeners.end());	}
 	void UnregisterReplacePieceRequestListener(Event_Listener_ReplacePieceRequest* aListener) { myReplacePieceRequestListeners.erase(std::remove(myReplacePieceRequestListeners.begin(), myReplacePieceRequestListeners.end(), aListener), myReplacePieceRequestListeners.end()); }
 	void UnregisterGameOverListener(Event_Listener_GameOver* aListener) { myGameOverListeners.erase(std::remove(myGameOverListeners.begin(), myGameOverListeners.end(), aListener), myGameOverListeners.end()); }
-
+	
 	// Send Events
 	void SendEvaluatedPossibleMovesEvent(const std::vector<Chess_Tile*>& somePossibleMoves);
 	void SendPieceSelectedEvent(const Chess_RankAndFile& aRankAndFile);
@@ -51,7 +51,7 @@ private:
 	std::vector<Event_Listener_MovePieceRequest*> myMovePieceRequestListeners;
 	std::vector<Event_Listener_RemovePieceRequest*> myRemovePieceRequestListeners;
 	std::vector<Event_Listener_ReplacePieceRequest*> myReplacePieceRequestListeners;
-	std::vector<Event_Listener_GameOver*> myGameOverListeners;
+	std::vector<Event_Listener_GameOver*> myGameOverListeners;;
 
 	static Event_Handler* myInstance;
 };

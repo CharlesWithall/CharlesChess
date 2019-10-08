@@ -9,7 +9,7 @@
 class Chess_Rule_GameOver
 {
 public:
-	virtual void Evaluate(const Chess_Board* const aChessBoard) const = 0;
+	virtual void Evaluate(Chess_Board* const aChessBoard) const = 0;
 
 protected:
 	Chess_Check_Rule myCheckRuleHandler;

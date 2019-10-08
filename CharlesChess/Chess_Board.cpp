@@ -21,11 +21,12 @@
 
 #include "Event_Handler.h"
 
+#pragma region Construction and Destruction
 Chess_Board::Chess_Board()
 {
 	InitTiles();
 	InitPieces();
-
+	
 	Event_Handler::GetInstance()->RegisterPieceSelectedListener(this);
 	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
 	Event_Handler::GetInstance()->RegisterReplacePieceRequestListener(this);
@@ -39,85 +40,24 @@ Chess_Board::Chess_Board()
 	myGameOverRules.push_back(new Chess_Rule_GameOver_StaleMate_50Moves());
 }
 
-Chess_Board::Chess_Board(const Chess_Board& aChessBoard)
-{
-	for (size_t i = 0; i < myChessTiles.size(); ++i)
-	{
-		Chess_RankArray& rank = myChessTiles[i];
-		for (size_t j = 0; j < rank.size(); ++j)
-		{
-			rank[j] = new Chess_Tile(Chess_RankAndFile(i, j));
-		}
-	}
-
-	for (Chess_Piece* piece : aChessBoard.myWhitePieces)
-	{
-		Chess_Piece* newPiece = Chess_Piece::CreatePiece(Chess_Pieces_Colour::WHITE, piece->GetType());
-		GetTile(piece->GetTile()->GetRankAndFile())->SetPiece(newPiece);
-		myWhitePieces.push_back(newPiece);
-	}
-
-	for (Chess_Piece* piece : aChessBoard.myBlackPieces)
-	{
-		Chess_Piece* newPiece = Chess_Piece::CreatePiece(Chess_Pieces_Colour::BLACK, piece->GetType());
-		GetTile(piece->GetTile()->GetRankAndFile())->SetPiece(newPiece);
-		myBlackPieces.push_back(newPiece);
-	}
-
-	mySpecialRules.push_back(new Chess_Rule_Special_Castle());
-	//mySpecialRules.push_back(new Chess_Rule_Special_PawnPromotion());
-	mySpecialRules.push_back(new Chess_Rule_Special_EnPassant());
-}
-
 Chess_Board::~Chess_Board()
 {
 	for (Chess_RankArray& rank : myChessTiles)
-	{
 		for (size_t i = 0; i < rank.size(); ++i)
-		{
-			if (Chess_Tile* tile = rank[i])
-			{
-				delete tile;
-				tile = nullptr;
-			}
-		}
-	}
+			if (Chess_Tile* tile = rank[i]) { delete tile; tile = nullptr; }
 
 	for (Chess_Piece* piece : myWhitePieces)
-	{
-		if (piece)
-		{
-			delete piece;
-			piece = nullptr;
-		}
-	}
+		if (piece) { delete piece; piece = nullptr; }
 
 	for (Chess_Piece* piece : myBlackPieces)
-	{
-		if (piece)
-		{
-			delete piece;
-			piece = nullptr;
-		}
-	}
+		if (piece) { delete piece; piece = nullptr; }
 
 	for (Chess_Rule_Special* rule : mySpecialRules)
-	{
-		if (rule)
-		{
-			delete rule;
-			rule = nullptr;
-		}
-	}
+		if (rule) { delete rule; rule = nullptr; }
 
 	Event_Handler::GetInstance()->UnregisterPieceSelectedListener(this);
 	Event_Handler::GetInstance()->UnregisterMovePieceRequestListener(this);
 	Event_Handler::GetInstance()->UnregisterReplacePieceRequestListener(this);
-}
-
-Chess_Piece* Chess_Board::GetPiece(const Chess_RankAndFile& aRankAndFile) const
-{
-	return GetTile(aRankAndFile)->GetPiece();
 }
 
 void Chess_Board::InitTiles()
@@ -134,11 +74,27 @@ void Chess_Board::InitTiles()
 
 void Chess_Board::InitPieces()
 {
+	// Init Kings to position [0]
+	const int kingX = 4;
+	const int kingWhiteY = 0;
+	const int kingBlackY = 7;
+
+	myChessTiles[kingX][kingWhiteY]->SetPiece(CreatePiece(Chess_RankAndFile(kingX, kingWhiteY)));
+	myChessTiles[kingX][kingBlackY]->SetPiece(CreatePiece(Chess_RankAndFile(kingX, kingBlackY)));
+
+	myWhitePieces.push_back(myChessTiles[kingX][kingWhiteY]->GetPiece());
+	myBlackPieces.push_back(myChessTiles[kingX][kingBlackY]->GetPiece());
+
 	for (size_t i = 0; i < myChessTiles.size(); ++i)
 	{
 		Chess_RankArray& rank = myChessTiles[i];
 		for (size_t j = 0; j < rank.size(); ++j)
 		{
+			if ((j == kingWhiteY || j == kingBlackY) && i == kingX)
+			{
+				continue;
+			}
+
 			if (Chess_Piece* newPiece = CreatePiece(Chess_RankAndFile(i, j)))
 			{
 				rank[j]->SetPiece(newPiece);
@@ -147,6 +103,14 @@ void Chess_Board::InitPieces()
 					myWhitePieces.push_back(newPiece);
 				else
 					myBlackPieces.push_back(newPiece);
+
+				if (newPiece->GetType() == Chess_Pieces_EnumType::PAWN)
+				{
+					if (newPiece->GetColour() == Chess_Pieces_Colour::WHITE)
+						myWhitePawns[i] = static_cast<Chess_Pawn*>(newPiece);
+					else
+						myBlackPawns[i] = static_cast<Chess_Pawn*>(newPiece);
+				}
 			}
 		}
 	}
@@ -173,6 +137,7 @@ Chess_Piece* Chess_Board::CreatePiece(const Chess_RankAndFile& aRankAndFile)
 
 	return nullptr;
 }
+#pragma endregion
 
 Chess_Tile* Chess_Board::GetRelativeTile(const Chess_Tile* const aTile, const int xOffset, const int yOffset) const
 {
@@ -186,6 +151,22 @@ Chess_Tile* Chess_Board::GetRelativeTile(const Chess_Tile* const aTile, const in
 	return nullptr;
 }
 
+const bool Chess_Board::GetIsPassedPawn(const Chess_Pawn* aPawn) const
+{
+	const int pawnIndex = aPawn->GetTile()->GetRankAndFile().myFile;
+	const std::array<Chess_Pawn*, 8>& searchPawns = aPawn->GetColour() == Chess_Pieces_Colour::WHITE ? myBlackPawns : myWhitePawns;
+	
+	for (int i = pawnIndex - 1; i <= pawnIndex + 1; ++i)
+	{
+		if (i >= 0 && i < 8 && searchPawns[i] != nullptr)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Chess_Board::OnPieceSelected(const Event_PieceSelected& anEvent)
 {
 	const Chess_Tile* const chessTile = GetTile(anEvent.myRankAndFile);
@@ -195,55 +176,69 @@ void Chess_Board::OnPieceSelected(const Event_PieceSelected& anEvent)
 	}
 }
 
+#pragma region Event Responses
 void Chess_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
 {
 	Chess_Tile* toTile = GetTile(anEvent.myToPosition);
 	Chess_Tile* fromTile = GetTile(anEvent.myFromPosition);
 	
-	if (anEvent.myShouldEndTurn)
-	{
-		const Chess_Pieces_EnumType takingPieceType = fromTile ? (fromTile->GetPiece() ? fromTile->GetPiece()->GetType() : Chess_Pieces_EnumType::INVALID) : Chess_Pieces_EnumType::INVALID;
-		const bool isTakingPiece = toTile && toTile->GetPiece();
-		myMoveHistory.push(new Chess_Move(takingPieceType, anEvent.myToPosition, anEvent.myFromPosition, isTakingPiece, false)); //CPW: CHECK TODO
+	MovePiece(toTile, fromTile, anEvent.myEventSource, anEvent.myShouldEndTurn);
 
-		if (takingPieceType == Chess_Pieces_EnumType::PAWN || isTakingPiece)
-			myNumberOfMovesSincePawnMoveOrPieceTaken = 0;
-		else
-			++myNumberOfMovesSincePawnMoveOrPieceTaken;
-	}
-
-	MovePiece(toTile, fromTile, Event_Source::DEFAULT);
-
-	for (const Chess_Rule_GameOver* const gameOverRule : myGameOverRules)
-	{
-		gameOverRule->Evaluate(this);
-	}
+	Debug_Readout::WriteBoard(this);
+	
+	CheckGameOver();
 }
 
-void Chess_Board::MovePiece(Chess_Tile* const aToTile, Chess_Tile* const aFromTile, const Event_Source anEventSource)
+void Chess_Board::OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent)
 {
+	if (anEvent.myFromPieceType != Chess_Pieces_EnumType::INVALID && anEvent.myToPieceType != Chess_Pieces_EnumType::INVALID)
+	{
+		ReplacePiece(anEvent.myRankAndFile, anEvent.myColour, anEvent.myToPieceType);
+	}
+}
+#pragma endregion
+
+#pragma region Piece Placement
+void Chess_Board::MovePiece(Chess_Tile* const aToTile, Chess_Tile* const aFromTile, const Event_Source anEventSource, const bool aShouldAddMoveToHistory, const bool anEvaluateSpecial /*= true*/)
+{
+	if (aShouldAddMoveToHistory)
+	{
+		AddMoveToHistory(aFromTile, aToTile);
+	}
+
 	Chess_Piece* const takenPiece = aToTile->GetPiece();
 	Chess_Piece* const takingPiece = aFromTile->GetPiece();
 	const Chess_Pieces_EnumType takenPieceType = takenPiece ? takenPiece->GetType() : Chess_Pieces_EnumType::INVALID;
 
-	TakePiece(takenPiece);
+	RemovePiece(takenPiece);
 
 	aToTile->SetPiece(takingPiece);
-	takingPiece->SetHasMoved();
+	takingPiece->SetHasMoved(myMoveHistory.size());
 	aFromTile->SetPiece(nullptr);
 
-	for (Chess_Rule_Special* rule : mySpecialRules)
+	if (anEvaluateSpecial)
 	{
-		rule->Evaluate(aFromTile, aToTile, takenPieceType, this, anEventSource);
+		for (Chess_Rule_Special* rule : mySpecialRules)
+		{
+			rule->Evaluate(aFromTile, aToTile, takenPieceType, this, anEventSource);
+		}
 	}
 }
 
-void Chess_Board::TakePiece(Chess_Piece* aPiece)
+void Chess_Board::RemovePiece(Chess_Piece* aPiece)
 {
 	if (aPiece == nullptr)
 		return;
 
-	std::vector<Chess_Piece*>& pieceList = aPiece->GetColour() == Chess_Pieces_Colour::WHITE ? myWhitePieces : myBlackPieces;
+	const bool isWhite = aPiece->GetColour() == Chess_Pieces_Colour::WHITE;
+	std::vector<Chess_Piece*>& pieceList = isWhite ? myWhitePieces : myBlackPieces;
+	
+	if (aPiece->GetType() == Chess_Pieces_EnumType::PAWN)
+	{
+		std::array<Chess_Pawn*, 8>& pawnList = isWhite ? myWhitePawns : myBlackPawns;
+		pawnList[aPiece->GetTile()->GetRankAndFile().myFile] = nullptr;
+	}
+
 	for (int i = pieceList.size() - 1; i >= 0; --i)
 	{
 		if (pieceList[i] == aPiece)
@@ -257,28 +252,97 @@ void Chess_Board::TakePiece(Chess_Piece* aPiece)
 	}
 }
 
-void Chess_Board::PlacePiece(Chess_Piece* aPiece, Chess_Tile* aTile)
+void Chess_Board::TakeBackLastMove(const Event_Source anEventSource)
 {
-	aTile->SetPiece(aPiece);
-	std::vector<Chess_Piece*>& pieceList = aPiece->GetColour() == Chess_Pieces_Colour::WHITE ? myWhitePieces : myBlackPieces;
-	pieceList.push_back(aPiece);
-}
-
-void Chess_Board::OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent)
-{
-	if (anEvent.myFromPieceType != Chess_Pieces_EnumType::INVALID && anEvent.myToPieceType != Chess_Pieces_EnumType::INVALID)
+	if (Chess_Move* previousMove = myMoveHistory.top())
 	{
-		if (Chess_Tile* replaceTile = GetTile(anEvent.myRankAndFile))
+		const Chess_Special_Move_Type specialMoveType = previousMove->mySpecialMoveType;
+		switch (specialMoveType)
 		{
-			TakePiece(replaceTile->GetPiece());
-
-			Chess_Piece* piece = Chess_Piece::CreatePiece(anEvent.myColour, anEvent.myToPieceType);
-			PlacePiece(piece, replaceTile);		
+		case Chess_Special_Move_Type::CASTLE:
+		case Chess_Special_Move_Type::ENPASSANT:
+		case Chess_Special_Move_Type::PAWNPROMOTION:
+		{
+			for (Chess_Rule_Special* specialRule : mySpecialRules)
+			{
+				if (specialRule->GetSpecialRuleType() == specialMoveType)
+				{
+					specialRule->Revert(this, previousMove);
+					break;
+				}
+			}
+			break;
 		}
+		default:
+		{
+			Chess_Tile* fromTile = previousMove->myFromTile;
+			Chess_Tile* toTile = previousMove->myToTile;
+
+			MovePiece(fromTile, toTile, anEventSource, false, false);
+			if (previousMove->myTakenPiece != Chess_Pieces_EnumType::INVALID)
+			{
+				const Chess_Pieces_Colour restoreColour = fromTile->GetPiece()->GetColour() == Chess_Pieces_Colour::WHITE ? Chess_Pieces_Colour::BLACK : Chess_Pieces_Colour::WHITE;
+				Chess_Piece* restorePiece = Chess_Piece::CreatePiece(restoreColour, previousMove->myTakenPiece);
+				PlacePiece(restorePiece, toTile);
+				// CPW: To Do: the piece shouldn't get deleted and then newed again. Wherever it is - we need to add the piece to the old tile here.
+			}
+
+			fromTile->GetPiece()->ResetHasMoved(myMoveHistory.size());
+			break;
+		}
+		}
+
+		myMoveHistory.pop();
 	}
 }
 
-const std::vector<Chess_Move_Simple> Chess_Board::EvaluateAllPossibleMoves(const Chess_Pieces_Colour aColour) const
+void Chess_Board::PlacePiece(Chess_Piece* aPiece, Chess_Tile* aTile)
+{
+	const bool isWhite = aPiece->GetColour() == Chess_Pieces_Colour::WHITE;
+	std::vector<Chess_Piece*>& pieceList = isWhite ? myWhitePieces : myBlackPieces;
+
+	aTile->SetPiece(aPiece);
+	pieceList.push_back(aPiece);
+
+	if (aPiece->GetType() == Chess_Pieces_EnumType::PAWN)
+	{
+		std::array<Chess_Pawn*, 8>& pawnList = isWhite ? myWhitePawns : myBlackPawns;
+		pawnList[aTile->GetRankAndFile().myFile] = nullptr;
+	}
+}
+
+void Chess_Board::ReplacePiece(const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour, const Chess_Pieces_EnumType aType)
+{
+	if (Chess_Tile* replaceTile = GetTile(aRankAndFile))
+	{
+		Chess_Piece* piece = Chess_Piece::CreatePiece(aColour, aType);
+
+		RemovePiece(replaceTile->GetPiece());
+		PlacePiece(piece, replaceTile);
+	}
+}
+#pragma endregion
+
+void Chess_Board::AddMoveToHistory(Chess_Tile* aFromTile, Chess_Tile* aToTile)
+{
+	const Chess_Piece* takingPiece = aFromTile->GetPiece();
+	const Chess_Piece* takenPiece = aToTile->GetPiece();
+	const Chess_Pieces_EnumType takingPieceType = takingPiece ? takingPiece->GetType() : Chess_Pieces_EnumType::INVALID;
+	const Chess_Pieces_EnumType takenPieceType = takenPiece ? takenPiece->GetType() : Chess_Pieces_EnumType::INVALID;
+	myMoveHistory.push(new Chess_Move(takingPieceType, takenPieceType, aFromTile, aToTile));
+
+	myNumberOfMovesSincePawnMoveOrPieceTaken = (takingPieceType == Chess_Pieces_EnumType::PAWN || takenPiece) ? 0 : myNumberOfMovesSincePawnMoveOrPieceTaken + 1;
+}
+
+void Chess_Board::CheckGameOver()
+{
+	for (const Chess_Rule_GameOver* const gameOverRule : myGameOverRules)
+	{
+		gameOverRule->Evaluate(this);
+	}
+}
+
+const std::vector<Chess_Move_Simple> Chess_Board::EvaluateAllPossibleMoves(const Chess_Pieces_Colour aColour)
 {
 	std::vector<Chess_Move_Simple> outMoves;
 	const std::vector<Chess_Piece*>& pieceList = aColour == Chess_Pieces_Colour::WHITE ? myWhitePieces : myBlackPieces;

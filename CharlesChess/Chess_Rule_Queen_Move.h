@@ -6,7 +6,7 @@
 class Chess_Rule_Queen_Move : public Chess_Rule
 {
 public:
-	std::vector<Chess_Tile*> Evaluate(const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const override
+	std::vector<Chess_Tile*> Evaluate(Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard) const override
 	{
 		std::vector<Chess_Tile*> outVector;
 		Chess_Piece* piece = anOriginTile->GetPiece();
@@ -26,7 +26,7 @@ public:
 		return outVector;
 	}
 private:
-	void EvaluateTile(std::vector<Chess_Tile*>& somePossibleTiles, const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard, const Chess_Pieces_Colour aColour, const int xOffset, const int yOffset) const
+	void EvaluateTile(std::vector<Chess_Tile*>& somePossibleTiles, const Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard, const Chess_Pieces_Colour aColour, const int xOffset, const int yOffset) const
 	{
 		if (Chess_Tile* possibleTile = aChessBoard->GetRelativeTile(anOriginTile, xOffset, yOffset))
 		{

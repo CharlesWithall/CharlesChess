@@ -40,8 +40,7 @@ Chess_Piece* Chess_Piece::CreatePiece(const Chess_Pieces_Colour aColour, const C
 	return nullptr;
 }
 
-#include <typeinfo>
-const std::vector<Chess_Tile*> Chess_Piece::EvaluateMoves(const Chess_Board* const aChessBoard, const Chess_Source aChessSource) const
+const std::vector<Chess_Tile*> Chess_Piece::EvaluateMoves(Chess_Board* const aChessBoard, const Chess_Source aChessSource) const
 {
 	std::vector<Chess_Tile*> outMoves;
 
@@ -68,4 +67,22 @@ const std::vector<Chess_Tile*> Chess_Piece::EvaluateMoves(const Chess_Board* con
 	}
 
 	return outMoves;
+}
+
+void Chess_Piece::SetHasMoved(const int aMoveReferenceNumber)
+{
+	if (!myHasMoved)
+	{
+		myFirstMoveReferenceNumber = aMoveReferenceNumber;
+		myHasMoved = true;
+	}
+}
+
+void Chess_Piece::ResetHasMoved(const int aMoveReferenceNumber)
+{
+	if (aMoveReferenceNumber == myFirstMoveReferenceNumber)
+	{
+		myFirstMoveReferenceNumber = 0;
+		myHasMoved = false;
+	}
 }

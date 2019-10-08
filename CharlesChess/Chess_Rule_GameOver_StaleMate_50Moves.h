@@ -5,7 +5,7 @@
 class Chess_Rule_GameOver_StaleMate_50Moves : public Chess_Rule_GameOver
 {
 public:
-	void Evaluate(const Chess_Board* const aChessBoard) const override
+	void Evaluate(Chess_Board* const aChessBoard) const override
 	{
 		if (aChessBoard->GetNumberOfMovesSincePawnMoveOrPieceTaken() >= 50)
 		{

@@ -243,6 +243,9 @@
     <ClInclude Include="Debug_Profiler.h">
       <Filter>Header Files\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Debug_Readout.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI_Board.cpp">
@@ -321,6 +324,9 @@
       <Filter>Source Files\AI</Filter>
     </ClCompile>
     <ClCompile Include="Debug_Profiler.cpp">
+      <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug_Readout.cpp">
       <Filter>Source Files\Debug</Filter>
     </ClCompile>
   </ItemGroup>

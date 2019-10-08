@@ -24,19 +24,24 @@ public:
 
 	const Chess_Check_Rule& GetCheckRuleHandler() const { return myCheckRuleHandler; }
 	Chess_Pieces_Colour GetColour() const { return myColour; }
+
 	bool GetHasMoved() const { return myHasMoved; }
-	void SetHasMoved() { myHasMoved = true; }
+	void SetHasMoved(const int aMoveReferenceNumber);
+	void ResetHasMoved(const int aMoveReferenceNumber);
+	void ForceResetHasMoved() { myFirstMoveReferenceNumber = 0; myHasMoved = false; }
 
 	const Chess_Tile* const GetTile() const { return myTile; }
 	void SetTile(Chess_Tile* const aTile) { myTile = aTile; }
 
-	const std::vector<Chess_Tile*> EvaluateMoves(const Chess_Board* const aChessBoard, const Chess_Source aChessSource) const;
+	const std::vector<Chess_Tile*> EvaluateMoves(Chess_Board* const aChessBoard, const Chess_Source aChessSource) const;
 
 protected:
 	std::vector<Chess_Rule*> myChessRules;
 	Chess_Tile* myTile;
 	Chess_Pieces_Colour myColour;
 	Chess_Check_Rule myCheckRuleHandler;
-	bool myHasMoved;
+
+	int myFirstMoveReferenceNumber = 0;
+	bool myHasMoved = false;
 };
 

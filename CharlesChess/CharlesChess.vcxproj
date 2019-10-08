@@ -158,6 +158,7 @@
     <ClInclude Include="Chess_Rule_Special_PawnPromotion.h" />
     <ClInclude Include="Chess_Tile.h" />
     <ClInclude Include="Debug_Profiler.h" />
+    <ClInclude Include="Debug_Readout.h" />
     <ClInclude Include="Event_Defines.h" />
     <ClInclude Include="Event_Events.h" />
     <ClInclude Include="Event_Handler.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="Chess_Rook.cpp" />
     <ClCompile Include="Chess_Tile.cpp" />
     <ClCompile Include="Debug_Profiler.cpp" />
+    <ClCompile Include="Debug_Readout.cpp" />
     <ClCompile Include="Event_Handler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UI_Board.cpp" />

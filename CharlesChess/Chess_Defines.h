@@ -2,6 +2,8 @@
 
 #include <string>
 
+#define DEBUG_ENABLED 1
+
 enum Chess_Pieces_EnumType
 {
 	INVALID,
@@ -33,6 +35,14 @@ enum Chess_GameOverResult
 	BLACKWINS
 };
 
+enum Chess_Special_Move_Type
+{
+	NONE,
+	CASTLE,
+	ENPASSANT,
+	PAWNPROMOTION
+};
+
 class Chess_RankAndFile
 {
 public:
@@ -43,7 +53,7 @@ public:
 	{	
 	}
 
-	const std::string GetReadableName()
+	const std::string GetReadableName() const
 	{
 		if (myReadableName.empty())
 		{
@@ -52,11 +62,11 @@ public:
 
 			if (IsValid())
 			{
-				myReadableName = std::string() + files[myFile] + ranks[myRank];
+				const_cast<Chess_RankAndFile*>(this)->myReadableName = std::string() + files[myFile] + ranks[myRank];
 			}
 			else
 			{
-				myReadableName = std::string("INVALID");
+				const_cast<Chess_RankAndFile*>(this)->myReadableName = std::string("INVALID");
 			}
 		}
 

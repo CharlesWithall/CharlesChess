@@ -7,7 +7,7 @@
 class Chess_Rule_GameOver_NotEnoughPieces : public Chess_Rule_GameOver
 {
 public:
-	void Evaluate(const Chess_Board* const aChessBoard) const override
+	void Evaluate(Chess_Board* const aChessBoard) const override
 	{
 		const std::vector<Chess_Piece*>& whitePieces = aChessBoard->GetWhitePieces();
 		const std::vector<Chess_Piece*>& blackPieces = aChessBoard->GetBlackPieces();

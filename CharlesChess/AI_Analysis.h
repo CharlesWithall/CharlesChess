@@ -17,7 +17,7 @@ public:
 	const float AnalyseMove(const Chess_Board* const aChessBoard, const Chess_RankAndFile& aFromLocation, const Chess_RankAndFile& aToLocation) const;
 private:
 	void BuildPositionScoreMaps();
-	const float LookUpPositionScore(const Chess_Pieces_EnumType aPieceType, const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour) const;
+	const float LookUpPositionScore(const Chess_Pieces_EnumType aPieceType, const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour, const bool anIsPassedPawn) const;
 
 	PositionScoreMap myKingPositionMap;
 	PositionScoreMap myQueenPositionMap;
@@ -25,6 +25,7 @@ private:
 	PositionScoreMap myBishopPositionMap;
 	PositionScoreMap myKnightPositionMap;
 	PositionScoreMap myPawnPositionMap;
+	PositionScoreMap myPassedPawnPositionMap;
 
 	Chess_Pieces_Colour myMaximizingColour;
 };

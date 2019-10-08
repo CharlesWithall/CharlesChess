@@ -2,6 +2,8 @@
 
 #include "Chess_Defines.h"
 
+#include "Event_Defines.h"
+
 #include <vector>
 
 struct Event_PieceSelected
@@ -21,15 +23,17 @@ struct Event_EvaulatedPossibleMoves
 
 struct Event_MovePieceRequest
 {
-	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn)
+	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const Event_Source anEventSource, const bool aShouldEndturn)
 		: myFromPosition(aFromPosition)
 		, myToPosition(aToPosition)
+		, myEventSource(anEventSource)
 		, myShouldEndTurn(aShouldEndturn)
 	{
 	}
 
 	Chess_RankAndFile myFromPosition;
 	Chess_RankAndFile myToPosition;
+	Event_Source myEventSource;
 	bool myShouldEndTurn;
 };
 

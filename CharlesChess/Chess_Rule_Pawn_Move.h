@@ -6,7 +6,7 @@
 class Chess_Rule_Pawn_Move : public Chess_Rule
 {
 public:
-	std::vector<Chess_Tile*> Evaluate(const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const override
+	std::vector<Chess_Tile*> Evaluate(Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard) const override
 	{
 		std::vector<Chess_Tile*> outVector;
 		Chess_Piece* piece = anOriginTile->GetPiece();
@@ -18,7 +18,8 @@ public:
 		{
 			outVector.push_back(forwardTile);
 
-			if (!piece->GetHasMoved())
+			const Chess_RankAndFile& rankAndFile = anOriginTile->GetRankAndFile();
+			if (rankAndFile.myRank == 1 || rankAndFile.myRank == 6)
 			{
 				Chess_Tile* doubleForwardTile = aChessBoard->GetRelativeTile(forwardTile, 0, offset);
 				if (doubleForwardTile && !doubleForwardTile->GetPiece())

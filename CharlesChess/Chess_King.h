@@ -11,7 +11,7 @@ public:
 	Chess_King(Chess_Pieces_Colour aColour) : Chess_Piece(aColour)
 	{
 		myChessRules.push_back(new Chess_Rule_King_Move());
-		myChessRules.push_back(new Chess_Rule_King_Castle());
+		//myChessRules.push_back(new Chess_Rule_King_Castle());
 	};
 	~Chess_King();
 

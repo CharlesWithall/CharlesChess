@@ -46,6 +46,7 @@ private:
 
 	void CloseMenu() { delete myMainMenu; myMainMenu = nullptr; myShouldCloseMenu = false; }
 	void HandleEscapeKeyPress();
+	void HandleBackspaceKeyPress();
 	void Reset();
 
 	UI_Board* myUIBoard;

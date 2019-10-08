@@ -162,6 +162,11 @@ void UI_Board::OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent)
 
 void UI_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
 {
+	if (anEvent.myEventSource == Event_Source::EVALUATION)
+	{
+		return;
+	}
+
 	UI_Tile* moveToTile = GetTile(anEvent.myToPosition);
 	UI_Tile* moveFromTile = GetTile(anEvent.myFromPosition);
 

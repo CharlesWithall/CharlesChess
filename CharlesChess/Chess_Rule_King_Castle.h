@@ -7,7 +7,7 @@
 class Chess_Rule_King_Castle : public Chess_Rule
 {
 public:
-	std::vector<Chess_Tile*> Evaluate(const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const override
+	std::vector<Chess_Tile*> Evaluate(Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard) const override
 	{
 		std::vector<Chess_Tile*> outVector;
 		Chess_Piece* piece = anOriginTile->GetPiece();
@@ -23,7 +23,7 @@ public:
 		return outVector;
 	}
 private:
-	void EvaluateKingSideCastle(std::vector<Chess_Tile*>& anOutMoveList, const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const
+	void EvaluateKingSideCastle(std::vector<Chess_Tile*>& anOutMoveList, Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard) const
 	{
 		const int kingSideCastleOffset = 3;
 		const int kingSideSelectionOffset = 2;
@@ -62,7 +62,7 @@ private:
 	}
 
 
-	void EvaluateQueenSideCastle(std::vector<Chess_Tile*>& anOutMoveList, const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const
+	void EvaluateQueenSideCastle(std::vector<Chess_Tile*>& anOutMoveList, Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard) const
 	{
 		const int queenSideCastleOffset = -4;
 		const int queenSideSelectionOffset = -2;

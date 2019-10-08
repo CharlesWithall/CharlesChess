@@ -6,7 +6,7 @@
 class Chess_Rule_Pawn_Take : public Chess_Rule
 {
 public:
-	std::vector<Chess_Tile*> Evaluate(const Chess_Tile* const anOriginTile, const Chess_Board* const aChessBoard) const override
+	std::vector<Chess_Tile*> Evaluate(Chess_Tile* const anOriginTile, Chess_Board* const aChessBoard) const override
 	{
 		std::vector<Chess_Tile*> outVector;
 		Chess_Piece* piece = anOriginTile->GetPiece();

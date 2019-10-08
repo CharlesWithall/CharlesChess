@@ -1,6 +1,7 @@
 #include "AI_Analysis.h"
 
 #include "Chess_Board.h"
+#include "Chess_Pawn.h"
 #include "Chess_Piece.h"
 #include "Chess_Tile.h"
 
@@ -24,8 +25,10 @@ const float AI_Analysis::Analyse(const Chess_Board* const aChessBoard) const
 		{
 			if (const Chess_Tile* const tile = piece->GetTile())
 			{
+				const Chess_Pieces_EnumType piecetype = piece->GetType();
+				const bool isPassedPawn = piecetype == Chess_Pieces_EnumType::PAWN && aChessBoard->GetIsPassedPawn(static_cast<const Chess_Pawn* const>(piece));
 				advantageValue -= piece->GetScore();
-				advantageValue -= LookUpPositionScore(piece->GetType(), tile->GetRankAndFile(), Chess_Pieces_Colour::BLACK);
+				advantageValue -= LookUpPositionScore(piecetype, tile->GetRankAndFile(), Chess_Pieces_Colour::BLACK, isPassedPawn);
 			}
 		}
 	}
@@ -36,8 +39,10 @@ const float AI_Analysis::Analyse(const Chess_Board* const aChessBoard) const
 		{
 			if (const Chess_Tile* const tile = piece->GetTile())
 			{
+				const Chess_Pieces_EnumType piecetype = piece->GetType();
+				const bool isPassedPawn = piecetype == Chess_Pieces_EnumType::PAWN && aChessBoard->GetIsPassedPawn(static_cast<const Chess_Pawn* const>(piece));
 				advantageValue += piece->GetScore();
-				advantageValue += LookUpPositionScore(piece->GetType(), tile->GetRankAndFile(), Chess_Pieces_Colour::WHITE);
+				advantageValue += LookUpPositionScore(piecetype, tile->GetRankAndFile(), Chess_Pieces_Colour::WHITE, isPassedPawn);
 			}
 		}
 	}
@@ -51,41 +56,52 @@ const float AI_Analysis::AnalyseMove(const Chess_Board* const aChessBoard, const
 	if (!fromPiece)
 		return 0.0f;
 
+	const Chess_Pieces_EnumType pieceType = fromPiece->GetType();
+	const bool isPassedPawn = pieceType == Chess_Pieces_EnumType::PAWN && aChessBoard->GetIsPassedPawn(static_cast<const Chess_Pawn* const>(fromPiece));
+
 	const Chess_Pieces_Colour fromColour = fromPiece->GetColour();
 	const Chess_Piece* const toPiece = aChessBoard->GetTile(aToLocation) ? aChessBoard->GetTile(aToLocation)->GetPiece() : nullptr;
 	const float takePieceScore = toPiece ? toPiece->GetScore() : 0.0f;
-	const float toLocationScore = LookUpPositionScore(fromPiece->GetType(), aToLocation, fromPiece->GetColour());
-	const float fromLocationScore = LookUpPositionScore(fromPiece->GetType(), aFromLocation, fromPiece->GetColour());
+	const float toLocationScore = LookUpPositionScore(pieceType, aToLocation, fromPiece->GetColour(), isPassedPawn);
+	const float fromLocationScore = LookUpPositionScore(pieceType, aFromLocation, fromPiece->GetColour(), isPassedPawn);
 	const float finalEvaluation = takePieceScore + (toLocationScore - fromLocationScore);
 
 	return myMaximizingColour == Chess_Pieces_Colour::BLACK ? -finalEvaluation : finalEvaluation;
 }
 
-const float AI_Analysis::LookUpPositionScore(const Chess_Pieces_EnumType aPieceType, const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour) const
+const float AI_Analysis::LookUpPositionScore(const Chess_Pieces_EnumType aPieceType, const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour, const bool anIsPassedPawn) const
 {
 	const PositionScoreMap* scoreMap = nullptr;
-	switch (aPieceType)
+
+	if (anIsPassedPawn)
 	{
-	case Chess_Pieces_EnumType::KING:
-		scoreMap = &myKingPositionMap;
-		break;
-	case Chess_Pieces_EnumType::QUEEN:
-		scoreMap = &myQueenPositionMap;
-		break;
-	case Chess_Pieces_EnumType::ROOK:
-		scoreMap = &myRookPositionMap;
-		break;
-	case Chess_Pieces_EnumType::BISHOP:
-		scoreMap = &myBishopPositionMap;
-		break;
-	case Chess_Pieces_EnumType::KNIGHT:
-		scoreMap = &myKnightPositionMap;
-		break;
-	case Chess_Pieces_EnumType::PAWN:
-		scoreMap = &myPawnPositionMap;
-		break;
-	default:
-		break;
+		scoreMap = &myPassedPawnPositionMap;
+	}
+	else
+	{
+		switch (aPieceType)
+		{
+		case Chess_Pieces_EnumType::KING:
+			scoreMap = &myKingPositionMap;
+			break;
+		case Chess_Pieces_EnumType::QUEEN:
+			scoreMap = &myQueenPositionMap;
+			break;
+		case Chess_Pieces_EnumType::ROOK:
+			scoreMap = &myRookPositionMap;
+			break;
+		case Chess_Pieces_EnumType::BISHOP:
+			scoreMap = &myBishopPositionMap;
+			break;
+		case Chess_Pieces_EnumType::KNIGHT:
+			scoreMap = &myKnightPositionMap;
+			break;
+		case Chess_Pieces_EnumType::PAWN:
+			scoreMap = &myPawnPositionMap;
+			break;
+		default:
+			break;
+		}
 	}
 
 	Chess_RankAndFile rankAndFile = aRankAndFile;
@@ -152,4 +168,13 @@ void AI_Analysis::BuildPositionScoreMaps()
 	myPawnPositionMap[2] = { 0.5f, -0.5f, -1.0f,  2.0f,  2.0f, -1.0f, -0.5f, 0.5f };
 	myPawnPositionMap[1] = { 0.5f,  1.0f,  1.0f, -2.0f, -2.0f,  1.0f,  1.0f, 0.5f };
 	myPawnPositionMap[0] = { 0.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.0f,  0.0f, 0.0f };
+
+	myPassedPawnPositionMap[7] = { 80.0f,  80.0f,  80.0f,  80.0f,  80.0f,  80.0f,  80.0f, 80.0f };
+	myPassedPawnPositionMap[6] = { 10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f, 10.0f };
+	myPassedPawnPositionMap[5] = { 5.0f,  5.0f,  5.0f,  5.0f,  5.0f,  5.0f,  5.0f, 5.0f };
+	myPassedPawnPositionMap[4] = { 4.0f,  4.0f,  4.0f,  4.0f,  4.0f,  4.0f,  4.0f, 4.0f };
+	myPassedPawnPositionMap[3] = { 3.0f,  3.0f,  3.0f,  3.0f,  3.0f,  3.0f,  3.0f, 3.0f };
+	myPassedPawnPositionMap[2] = { 2.0f,  2.0f,  2.0f,  2.0f,  2.0f,  2.0f,  2.0f, 2.0f };
+	myPassedPawnPositionMap[1] = { 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f, 0.0f };
+	myPassedPawnPositionMap[0] = { 0.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.0f,  0.0f, 0.0f };
 }

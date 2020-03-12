@@ -11,8 +11,7 @@
 class UI_Pieces;
 
 class UI_Model
-	: Event_Listener_ReplacePieceRequest
-	, Event_Listener_GameOver
+	: Event_Listener_GameOver
 {
 public:
 
@@ -24,9 +23,9 @@ public:
 	void SetTurnTaken() { myTurn = myTurn == Chess_Pieces_Colour::WHITE ? Chess_Pieces_Colour::BLACK : Chess_Pieces_Colour::WHITE; }
 	void Run();
 
-	void OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent) override;
 	void OnGameOver(const Event_GameOver& anEvent) override;
 
+	void RequestOpenMenu(const bool aShowResumeButton) { myMainMenu = new UI_MainMenu(aShowResumeButton); }
 	void RequestCloseMenu() { myShouldCloseMenu = true; }
 	void RequestReset() { myShouldReset = true; }
 
@@ -40,13 +39,19 @@ public:
 
 	const Chess_Pieces_Colour GetMyAIColour() const { return myAIColour; }
 	void SetAIColourFromSelection();
+
+	void OpenPawnPromotionMenu(const Chess_RankAndFile& aFromRankAndFile, const Chess_RankAndFile& aToRankAndFile, const Chess_Pieces_Colour aColour) { myPawnPromotion = new UI_PawnPromotion(aFromRankAndFile, aToRankAndFile, aColour); }
+	void ClosePawnPromotionMenu() { if (myPawnPromotion) delete myPawnPromotion; myPawnPromotion = nullptr; }
+
+	void Resync() { myUIBoard->Resync(); }
+
+	bool IsDebugMode() const { return myDebugModeEnabled; }
+	bool ToggleDebugMode() { myDebugModeEnabled = !myDebugModeEnabled; return myDebugModeEnabled; }
 private:
 	UI_Model();
 	~UI_Model();
 
 	void CloseMenu() { delete myMainMenu; myMainMenu = nullptr; myShouldCloseMenu = false; }
-	void HandleEscapeKeyPress();
-	void HandleBackspaceKeyPress();
 	void Reset();
 
 	UI_Board* myUIBoard;
@@ -63,5 +68,7 @@ private:
 	bool myIsPlayingAgainstComputer;
 	Chess_Pieces_Colour myAIColour;
 	UI_MainMenu_NewGameColour myNewGameColour;
+
+	bool myDebugModeEnabled;
 };
 

@@ -1,0 +1,28 @@
+#include "Audio_Model.h"
+
+#include "Audio_MovePiece.h"
+
+Audio_Model* Audio_Model::myInstance = nullptr;
+
+Audio_Model* Audio_Model::GetInstance()
+{
+	if (myInstance == nullptr)	myInstance = new Audio_Model();
+	return myInstance;
+}
+
+Audio_Model::Audio_Model()
+{
+	myAudioMovePiece = new Audio_MovePiece();
+}
+
+Audio_Model::~Audio_Model()
+{
+	delete myAudioMovePiece;
+}
+
+void Audio_Model::Play_MovePiece()
+{ 
+	myAudioMovePiece->Play();
+}
+
+

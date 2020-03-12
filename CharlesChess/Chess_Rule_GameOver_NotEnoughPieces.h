@@ -9,11 +9,13 @@ class Chess_Rule_GameOver_NotEnoughPieces : public Chess_Rule_GameOver
 public:
 	void Evaluate(Chess_Board* const aChessBoard) const override
 	{
-		const std::vector<Chess_Piece*>& whitePieces = aChessBoard->GetWhitePieces();
-		const std::vector<Chess_Piece*>& blackPieces = aChessBoard->GetBlackPieces();
+		const std::array<Chess_Piece*, 16>& whitePieces = aChessBoard->GetWhitePieces();
+		const std::array<Chess_Piece*, 16>& blackPieces = aChessBoard->GetBlackPieces();
+		const std::vector<Chess_Piece*>& extraWhitePieces = aChessBoard->GetExtraWhitePieces();
+		const std::vector<Chess_Piece*>& extraBlackPieces = aChessBoard->GetExtraBlackPieces();
 
-		const int whitePiecesCount = whitePieces.size();
-		const int blackPiecesCount = blackPieces.size();
+		const int whitePiecesCount = whitePieces.size() + extraWhitePieces.size();
+		const int blackPiecesCount = blackPieces.size() + extraBlackPieces.size();
 
 		if (whitePiecesCount <= 3 && blackPiecesCount <= 3)
 		{

@@ -85,6 +85,15 @@
     <Filter Include="Source Files\Debug">
       <UniqueIdentifier>{01d07b34-5bb6-4cd0-8180-389b546e5af6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{bef816ee-b46e-4ad6-83d3-4abc36e3007b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{73a0b2e9-33a1-415a-9faf-8e8755b43fac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\JSON">
+      <UniqueIdentifier>{0aceb3aa-1424-41fb-a8a2-4ce61948ea40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI_Tile.h">
@@ -246,6 +255,33 @@
     <ClInclude Include="Debug_Readout.h">
       <Filter>Header Files\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="UI_Listener_Keyboard.h">
+      <Filter>Header Files\UI\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug_Defines.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio_MovePiece.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Highlight_PreviousMove.h">
+      <Filter>Header Files\UI\Highlights</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio_Model.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_Helpers.h">
+      <Filter>Header Files\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Openings.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Header Files\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_EndGame.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI_Board.cpp">
@@ -271,24 +307,6 @@
     </ClCompile>
     <ClCompile Include="Chess_Model.cpp">
       <Filter>Source Files\Chess</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_Rook.cpp">
-      <Filter>Source Files\Chess\Pieces</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_Bishop.cpp">
-      <Filter>Source Files\Chess\Pieces</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_King.cpp">
-      <Filter>Source Files\Chess\Pieces</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_Knight.cpp">
-      <Filter>Source Files\Chess\Pieces</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_Pawn.cpp">
-      <Filter>Source Files\Chess\Pieces</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_Queen.cpp">
-      <Filter>Source Files\Chess\Pieces</Filter>
     </ClCompile>
     <ClCompile Include="Event_Handler.cpp">
       <Filter>Source Files\Events</Filter>
@@ -329,5 +347,31 @@
     <ClCompile Include="Debug_Readout.cpp">
       <Filter>Source Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="UI_Listener_Keyboard.cpp">
+      <Filter>Source Files\UI\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio_MovePiece.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Highlight_PreviousMove.cpp">
+      <Filter>Source Files\UI\Highlights</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio_Model.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_Helpers.cpp">
+      <Filter>Source Files\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_Openings.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_EndGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="openings.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

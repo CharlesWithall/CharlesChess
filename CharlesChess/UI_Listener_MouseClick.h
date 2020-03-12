@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SFML/Audio.hpp"
 #include "SFML/Graphics.hpp"
 
 class UI_Board;
@@ -8,7 +9,7 @@ class UI_Tile;
 class UI_Listener_MouseClick
 {
 public:
-	UI_Listener_MouseClick(UI_Board* aChessBoard) : myChessBoard(aChessBoard) {}
+	UI_Listener_MouseClick(UI_Board* aChessBoard);
 
 	void Update(sf::RenderWindow& aWindow);
 

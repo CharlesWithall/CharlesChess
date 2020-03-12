@@ -7,8 +7,8 @@
 class UI_PawnPromotion
 {
 public:
-	UI_PawnPromotion(const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour);
-	~UI_PawnPromotion();
+	UI_PawnPromotion(const Chess_RankAndFile& aFromRankAndFile, const Chess_RankAndFile& aToRankAndFile, const Chess_Pieces_Colour aColour);
+	~UI_PawnPromotion() {};
 
 	void Draw(sf::RenderWindow& aWindow);
 private:
@@ -28,7 +28,8 @@ private:
 	sf::Sprite myKnightIcon;
 
 	Chess_Pieces_Colour myColour;
-	Chess_RankAndFile myRankAndFile;
+	Chess_RankAndFile myFromRankAndFile;
+	Chess_RankAndFile myToRankAndFile;
 
 	sf::RectangleShape mySelectedHighlight;
 

@@ -9,20 +9,11 @@
 class Chess_Pawn : public Chess_Piece
 {
 public:
-	Chess_Pawn(Chess_Pieces_Colour aColour) : Chess_Piece(aColour)
+	Chess_Pawn(Chess_Pieces_Colour aColour, const int aPieceListIndex) : Chess_Piece(aColour, aPieceListIndex)
 	{
 		myChessRules.push_back(new Chess_Rule_Pawn_Move());
 		myChessRules.push_back(new Chess_Rule_Pawn_EnPassant());
 		myChessRules.push_back(new Chess_Rule_Pawn_Take());
-	};
-
-	~Chess_Pawn()
-	{
-		for (Chess_Rule* rule : myChessRules)
-		{
-			delete rule;
-			rule = nullptr;
-		}
 	};
 
 	char GetConsoleIdentifier() const override { return 'P'; };

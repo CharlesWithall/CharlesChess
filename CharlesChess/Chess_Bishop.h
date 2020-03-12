@@ -7,11 +7,10 @@
 class Chess_Bishop : public Chess_Piece
 {
 public:
-	Chess_Bishop(Chess_Pieces_Colour aColour) : Chess_Piece(aColour)
+	Chess_Bishop(Chess_Pieces_Colour aColour, const int aPieceListIndex) : Chess_Piece(aColour, aPieceListIndex)
 	{
 		myChessRules.push_back(new Chess_Rule_Bishop_Move());
 	};
-	~Chess_Bishop();
 
 	char GetConsoleIdentifier() const override { return 'B'; };
 	std::string GetName() const override { return "Bishop"; };

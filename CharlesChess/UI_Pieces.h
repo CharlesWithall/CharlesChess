@@ -29,6 +29,7 @@ class UI_Piece
 public:
 	UI_Piece(const Chess_Pieces_EnumType aChessPiece, const Chess_Pieces_Colour aColour)
 		: myColour(aColour)
+		, myType(aChessPiece)
 	{
 		if (sf::Texture* pieceTexture = UI_Model::GetInstance()->GetPieces()->GetPieceTexture(aChessPiece, aColour))
 		{
@@ -38,5 +39,6 @@ public:
 
 	sf::Sprite mySprite;
 	const Chess_Pieces_Colour myColour;
+	const Chess_Pieces_EnumType myType;
 };
 

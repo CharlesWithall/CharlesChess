@@ -10,14 +10,14 @@
 class Chess_Rule_Special_PawnPromotion : public Chess_Rule_Special
 {
 public:
-	void Evaluate(const Chess_Tile* const aFromTile, const Chess_Tile* const aToTile, const Chess_Pieces_EnumType /*aTakenPieceType*/, Chess_Board* const aChessBoard, const Event_Source anEventSource) const override
+	bool Evaluate(const Chess_Tile* const aFromTile, const Chess_Tile* const aToTile, Chess_Board* const aChessBoard) const override
 	{
 		if (!aToTile)
-			return;
+			return false;
 
-		Chess_Piece* piece = aToTile->GetPiece();
+		Chess_Piece* piece = aFromTile->GetPiece();
 		if (!piece)
-			return;
+			return false;
 
 		const Chess_RankAndFile& toTileRankAndFile = aToTile->GetRankAndFile();
 
@@ -25,36 +25,34 @@ public:
 		const int tileRank = toTileRankAndFile.myRank;
 		const bool isLastRank = tileRank == 0 || tileRank == 7;
 
-		if (isPawn && isLastRank)
-		{
-			if (anEventSource == Event_Source::EVALUATION)
-			{
-				// Assume a Queen - we ought to assume a knight as well but for evaluation let's stick to queen for now
-				//aChessBoard->ReplacePiece(toTileRankAndFile, piece->GetColour(), Chess_Pieces_EnumType::QUEEN);
-				// CPW: TODO: I don't work for some reason
-			}
-			else
-			{
-				aChessBoard->GetLatestMove()->SetSpecialMoveType(Chess_Special_Move_Type::PAWNPROMOTION);
-				Event_Handler::GetInstance()->SendReplacePieceRequestEvent(toTileRankAndFile, piece->GetColour(), Chess_Pieces_EnumType::PAWN, Chess_Pieces_EnumType::INVALID);
-			}
-		}
+		return isPawn && isLastRank;
 	}
 
-	void Revert(Chess_Board* aChessBoard, const Chess_Move* aMove) const override
+	void Execute(Chess_Tile* const aFromTile, Chess_Tile* const aToTile, Chess_Board* const aChessBoard) override
 	{
-		if (aMove->mySpecialMoveType == Chess_Special_Move_Type::PAWNPROMOTION)
-		{
-			Chess_Tile* fromTile = aMove->myFromTile;
-			const Chess_Piece* piece = fromTile->GetPiece();
+		// Kill Pawn
+		Chess_Piece* promotedPawn = aFromTile->GetPiece();
+		aChessBoard->RemovePiece(promotedPawn);
+		aChessBoard->GetLatestMove()->myPromotedPawn = promotedPawn;
 
-			if (piece)
-			{
-				aChessBoard->MovePiece(fromTile, aMove->myToTile, Event_Source::EVALUATION, false, false);
-				aChessBoard->ReplacePiece(fromTile->GetRankAndFile(), piece->GetColour(), Chess_Pieces_EnumType::PAWN);
-			}
-			
-		}
+		// Kill Potential Enemy Piece
+		aChessBoard->RemovePiece(aToTile->GetPiece());
+
+		// Add Queen
+		aChessBoard->PlacePiece(aToTile->GetRankAndFile(), promotedPawn->GetColour(), Chess_Pieces_EnumType::QUEEN);	
+	}
+
+	void Revert(const Chess_Move& aMove, Chess_Board* const aChessBoard) override
+	{
+		// Kill Queen
+		aChessBoard->RemovePiece(aMove.myToTile->GetPiece());
+
+		// Revive Pawn
+		aChessBoard->PlacePiece(aMove.myPromotedPawn, aMove.myFromTile);
+
+		// Revive Potential Enemy Piece
+		if (aMove.myTakenPiece)
+			aChessBoard->PlacePiece(aMove.myTakenPiece, aMove.myToTile);
 	}
 
 	const Chess_Special_Move_Type GetSpecialRuleType() const override { return Chess_Special_Move_Type::PAWNPROMOTION; }

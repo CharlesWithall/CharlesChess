@@ -10,9 +10,8 @@ int main()
 }
 
 // MAIN TO DO:
-// Fix Analyse crashes
-// Make Pawn Promotion Evaluation right
-// Change the delete/re-instantiate of pieces
+// Speed up Analysis
+// Make Pawn Promotion work for analyser
 // Why are the knights over-zealous?
 
 // TO DO:

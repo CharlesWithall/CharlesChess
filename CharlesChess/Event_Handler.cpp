@@ -39,9 +39,9 @@ void Event_Handler::SendEvaluatedPossibleMovesEvent(const std::vector<Chess_Tile
 	}
 }
 
-void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const bool aShouldEndturn, const Event_Source anEventSource)
+void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition)
 {
-	Event_MovePieceRequest movePieceRequest = Event_MovePieceRequest(aFromPosition, aToPosition, anEventSource, aShouldEndturn);
+	Event_MovePieceRequest movePieceRequest = Event_MovePieceRequest(aFromPosition, aToPosition);
 
 	for (Event_Listener_MovePieceRequest* listener : myMovePieceRequestListeners)
 	{
@@ -49,28 +49,13 @@ void Event_Handler::SendMovePieceRequestEvent(const Chess_RankAndFile& aFromPosi
 	}
 }
 
-void Event_Handler::SendReplacePieceRequestEvent(const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour, const Chess_Pieces_EnumType aFromPieceType, const Chess_Pieces_EnumType aToPieceType)
+void Event_Handler::SendPawnPromotionRequestEvent(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const Chess_Pieces_EnumType aPromotionPiece)
 {
-	Event_ReplacePieceRequest replacePieceRequest = Event_ReplacePieceRequest(aRankAndFile, aColour, aFromPieceType, aToPieceType);
+	Event_PawnPromotionRequest pawnPromotionRequest = Event_PawnPromotionRequest(aFromPosition, aToPosition, aPromotionPiece);
 
-	for (Event_Listener_ReplacePieceRequest* listener : myReplacePieceRequestListeners)
+	for (Event_Listener_PawnPromotionRequest* listener : myPawnPromotionRequestListeners)
 	{
-		listener->OnReplacePieceRequested(replacePieceRequest);
-	}
-}
-
-void Event_Handler::SendRemovePieceRequestEvent(const Chess_RankAndFile& aRankAndFile, const Event_Source anEventSource)
-{
-	if (anEventSource == Event_Source::EVALUATION)
-	{
-		return;
-	}
-
-	Event_RemovePieceRequest removePieceRequest = Event_RemovePieceRequest(aRankAndFile);
-
-	for (Event_Listener_RemovePieceRequest* listener : myRemovePieceRequestListeners)
-	{
-		listener->OnRemovePieceRequested(removePieceRequest);
+		listener->OnPawnPromotionRequested(pawnPromotionRequest);
 	}
 }
 

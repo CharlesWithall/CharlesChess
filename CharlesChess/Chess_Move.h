@@ -9,10 +9,42 @@
 
 struct Chess_Move_Simple
 {
+	Chess_Move_Simple()
+		: myFromTile(Chess_RankAndFile(-1,-1))
+		, myToTile(Chess_RankAndFile(-1,-1))
+	{
+
+	}
 	Chess_Move_Simple(const Chess_RankAndFile& aFromTile, const Chess_RankAndFile& aToTile)
 		: myFromTile(aFromTile)
 		, myToTile(aToTile)
 	{
+	}
+
+	Chess_Move_Simple(char* aFromName, char* aToName)
+		: myFromTile(Chess_RankAndFile(aFromName))
+		, myToTile(Chess_RankAndFile(aToName))
+	{
+	}
+
+	bool operator==(const Chess_Move_Simple& rhs) const
+	{
+		if (myFromTile == rhs.myFromTile && myToTile == rhs.myToTile)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	bool operator!=(const Chess_Move_Simple& rhs) const
+	{
+		if (myFromTile == rhs.myFromTile && myToTile == rhs.myToTile)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	Chess_RankAndFile myFromTile;
@@ -21,11 +53,21 @@ struct Chess_Move_Simple
 
 struct Chess_Move
 {
-	Chess_Move(const Chess_Pieces_EnumType aPiece,
-		const Chess_Pieces_EnumType aTakenPiece,
+	Chess_Move()
+		: myTakingPiece(nullptr)
+		, myTakenPiece(nullptr)
+		, myPromotedPawn(nullptr)
+		, myFromTile(nullptr)
+		, myToTile(nullptr)
+		, mySpecialMoveType(Chess_Special_Move_Type::NONE)
+	{
+	}
+
+	Chess_Move(Chess_Piece* aTakingPiece,
+		Chess_Piece* aTakenPiece,
 		Chess_Tile* aFromTile,
 		Chess_Tile* aToTile)
-		: myPiece(aPiece)
+		: myTakingPiece(aTakingPiece)
 		, myTakenPiece(aTakenPiece)
 		, myFromTile(aFromTile)
 		, myToTile(aToTile)
@@ -52,8 +94,9 @@ struct Chess_Move
 
 	void SetSpecialMoveType(const Chess_Special_Move_Type aSpecialMoveType) { mySpecialMoveType = aSpecialMoveType; }
 
-	Chess_Pieces_EnumType myPiece;
-	Chess_Pieces_EnumType myTakenPiece;
+	Chess_Piece* myTakingPiece;
+	Chess_Piece* myTakenPiece;
+	Chess_Piece* myPromotedPawn;
 	Chess_Tile* myFromTile;
 	Chess_Tile* myToTile;
 	Chess_Special_Move_Type mySpecialMoveType;

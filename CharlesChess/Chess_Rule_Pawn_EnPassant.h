@@ -12,8 +12,8 @@ public:
 		std::vector<Chess_Tile*> outVector;
 		Chess_Piece* piece = anOriginTile->GetPiece();
 
-		const Chess_Move* const lastMove = aChessBoard->GetLatestMove();
-		const bool lastMoveWasPawnDoubleMove = lastMove && lastMove->myPiece == Chess_Pieces_EnumType::PAWN && std::abs(lastMove->myFromTile->GetRankAndFile().myRank - lastMove->myToTile->GetRankAndFile().myRank) == 2;
+		Chess_Move* lastMove = aChessBoard->GetLatestMove();
+		const bool lastMoveWasPawnDoubleMove = lastMove && lastMove->myTakingPiece->GetType() == Chess_Pieces_EnumType::PAWN && std::abs(lastMove->myFromTile->GetRankAndFile().myRank - lastMove->myToTile->GetRankAndFile().myRank) == 2;
 		if (lastMoveWasPawnDoubleMove)
 		{
 			const int offset = piece->GetColour() == Chess_Pieces_Colour::WHITE ? 1 : -1;

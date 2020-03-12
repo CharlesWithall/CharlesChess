@@ -19,50 +19,44 @@ Chess_Piece::~Chess_Piece()
 	}
 }
 
-Chess_Piece* Chess_Piece::CreatePiece(const Chess_Pieces_Colour aColour, const Chess_Pieces_EnumType aType)
+Chess_Piece* Chess_Piece::CreatePiece(const Chess_Pieces_Colour aColour, const Chess_Pieces_EnumType aType, const int aPieceListIndex)
 {
 	switch (aType)
 	{
 	case Chess_Pieces_EnumType::BISHOP:
-		return new Chess_Bishop(aColour);
+		return new Chess_Bishop(aColour, aPieceListIndex);
 	case Chess_Pieces_EnumType::KING:
-		return new Chess_King(aColour);
+		return new Chess_King(aColour, aPieceListIndex);
 	case Chess_Pieces_EnumType::KNIGHT:
-		return new Chess_Knight(aColour);
+		return new Chess_Knight(aColour, aPieceListIndex);
 	case Chess_Pieces_EnumType::PAWN:
-		return new Chess_Pawn(aColour);
+		return new Chess_Pawn(aColour, aPieceListIndex);
 	case Chess_Pieces_EnumType::QUEEN:
-		return new Chess_Queen(aColour);
+		return new Chess_Queen(aColour, aPieceListIndex);
 	case Chess_Pieces_EnumType::ROOK:
-		return new Chess_Rook(aColour);
+		return new Chess_Rook(aColour, aPieceListIndex);
 	}
 
 	return nullptr;
 }
 
-const std::vector<Chess_Tile*> Chess_Piece::EvaluateMoves(Chess_Board* const aChessBoard, const Chess_Source aChessSource) const
+const std::vector<Chess_Tile*> Chess_Piece::EvaluateMoves(Chess_Board* const aChessBoard) const
 {
 	std::vector<Chess_Tile*> outMoves;
 
 	for (Chess_Rule* rule : myChessRules)
 	{
-		const bool shouldEvaluate = rule && (aChessSource != Chess_Source::CHECK_EVALUATION || rule->ShouldEvaluateForCheck());
-		if (shouldEvaluate)
-		{
-			const std::vector<Chess_Tile*>& possibleMoves = rule->Evaluate(myTile, aChessBoard);
-			outMoves.insert(outMoves.end(), possibleMoves.begin(), possibleMoves.end());
-		}
+		const std::vector<Chess_Tile*>& possibleMoves = rule->Evaluate(myTile, aChessBoard);
+		outMoves.insert(outMoves.end(), possibleMoves.begin(), possibleMoves.end());
 	}
 
-	if (aChessSource == Chess_Source::MOVE_REQUEST || aChessSource == Chess_Source::GAME_OVER_EVALUATION)
+	for (int i = (int)outMoves.size() - 1; i >= 0; --i)
 	{
-		for (int i = (int)outMoves.size() - 1; i >= 0; --i)
+		Chess_Tile* move = outMoves[i];
+
+		if (myCheckRuleHandler.EvaluateTheoretical(aChessBoard, myColour, move, myTile))
 		{
-			Chess_Tile* move = outMoves[i];
-			if (myCheckRuleHandler.EvaluateTheoretical(aChessBoard, myColour, move, myTile))
-			{
-				outMoves.erase(outMoves.begin() + i);
-			}
+			outMoves.erase(outMoves.begin() + i);
 		}
 	}
 

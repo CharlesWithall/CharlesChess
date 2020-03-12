@@ -7,11 +7,10 @@
 class Chess_Rook : public Chess_Piece
 {
 public:
-	Chess_Rook(Chess_Pieces_Colour aColour) : Chess_Piece(aColour)
+	Chess_Rook(Chess_Pieces_Colour aColour, const int aPieceListIndex) : Chess_Piece(aColour, aPieceListIndex)
 	{
 		myChessRules.push_back(new Chess_Rule_Rook_Move());
 	};
-	~Chess_Rook();
 
 	char GetConsoleIdentifier() const override { return 'R'; };
 	std::string GetName() const override { return "Rook"; };

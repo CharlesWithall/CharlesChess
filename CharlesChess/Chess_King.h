@@ -8,12 +8,11 @@
 class Chess_King : public Chess_Piece
 {
 public:
-	Chess_King(Chess_Pieces_Colour aColour) : Chess_Piece(aColour)
+	Chess_King(Chess_Pieces_Colour aColour, const int aPieceListIndex) : Chess_Piece(aColour, aPieceListIndex)
 	{
 		myChessRules.push_back(new Chess_Rule_King_Move());
-		//myChessRules.push_back(new Chess_Rule_King_Castle());
+		myChessRules.push_back(new Chess_Rule_King_Castle());
 	};
-	~Chess_King();
 
 	char GetConsoleIdentifier() const override { return 'K'; };
 	std::string GetName() const override { return "King"; };

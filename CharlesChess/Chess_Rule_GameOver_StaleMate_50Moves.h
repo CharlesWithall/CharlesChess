@@ -9,7 +9,8 @@ public:
 	{
 		if (aChessBoard->GetNumberOfMovesSincePawnMoveOrPieceTaken() >= 50)
 		{
-			Event_Handler::GetInstance()->SendGameOverEvent(Chess_GameOverResult::STALEMATE);
+			// Pawn thing is shonky at the moment because of evaluations from AI look ahead etc.
+			//Event_Handler::GetInstance()->SendGameOverEvent(Chess_GameOverResult::STALEMATE);
 		}
 	}
 };

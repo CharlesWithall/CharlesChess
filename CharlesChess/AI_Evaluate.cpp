@@ -2,8 +2,11 @@
 
 #include "AI_Analysis.h"
 #include "AI_Defines.h"
+#include "AI_Model.h"
+#include "AI_Openings.h"
 
 #include "Chess_Board.h"
+#include "Chess_Check_Rule.h"
 #include "Chess_Model.h"
 #include "Chess_Move.h"
 #include "Chess_Piece.h"
@@ -11,125 +14,238 @@
 
 #include "Debug_Profiler.h"
 
-AI_Evaluate::AI_Evaluate(const Chess_Pieces_Colour aMaximizingcolour)
-	: myMaximizingColour(aMaximizingcolour)
+AI_Evaluate::AI_Evaluate(const Chess_Pieces_Colour aMaximizingColour)
+	: myMaximizingColour(aMaximizingColour)
+	, mySearchDepthOverride(0)
 {
-	myBoardAnalyser = new AI_Analysis(aMaximizingcolour);
+	myBoardAnalyser = new AI_Analysis(aMaximizingColour);
+	myCheckRuleHandler = new Chess_Check_Rule();
 }
-
 
 AI_Evaluate::~AI_Evaluate()
 {
+	delete myBoardAnalyser;
+	delete myCheckRuleHandler;
 }
 
 void AI_Evaluate::EvaluateBestMoves(Chess_Board* const aChessBoard)
 {
 	myBestMoves.clear();
-	mySearchDepth = 3;// theMinimumEvaluationDepth;// GetVariableDepthSearch(aChessBoard);
-	Evaluate(aChessBoard, aChessBoard->GetActivePlayer(), mySearchDepth, -theMaxFloatValue, theMaxFloatValue);
-	Debug_Profiler::QueryAverageTimes();
-	Debug_Profiler::QueryTotalTimes();
+
+	// Early Game
+	Chess_Move_Simple openingMove;
+	if (AI_Model::GetInstance()->GetOpenings()->SelectMoveFromOpeningCache(aChessBoard, openingMove))
+	{
+		myBestMoves.push_back(openingMove);
+		return;
+	}
+
+	// End Game
+
+
+	// Middle Game
+	mySearchDepth = GetVariableDepthSearch(aChessBoard);
+
+	DEBUG_PRINT("Executing Minimax with Search Depth: %d", mySearchDepth);
+
+	Evaluate(aChessBoard, aChessBoard->GetActivePlayer(), mySearchDepth, -theMaxFloatValue * theMaxFloatValue, theMaxFloatValue * theMaxFloatValue);
+	for (auto& move : myBestMoves)
+	{
+		DEBUG_PRINT("%s to %s is considered a Best Move", move.myFromTile.GetReadableName().c_str(), move.myToTile.GetReadableName().c_str());
+	}
 }
 
-// Check Mate ignored sometimes?!
-// castling  not workinh
+// OTHER MINIMAX OPTIMIZATIONS
+// ADD OPENINGS
+// GETS CAUGHT IN A LOOP - DOESN'T KNOW HOW TO END
+// PAWN PROMOTION - ONLY DOES QUEENS RIGHT NOW
+// IF HAS MASSIVE ADVANTAGE - SEARCH FOR A FORCED MATE
 
 const float AI_Evaluate::Evaluate(Chess_Board* const aChessBoard, const Chess_Pieces_Colour aMaximizingColour, const int aSearchIndex, float anAlphaPrune, float aBetaPrune)
 {
 	if (aSearchIndex == 0)
 	{
-		return myBoardAnalyser->Analyse(aChessBoard);
+		return myBoardAnalyser->Analyse(aChessBoard, aMaximizingColour);
 	}
-	//else if () //isCheckMate
-	//{
-	//	if (aMaximizingColour == myMaximizingColour)
-	//	{
-	//		return 1000.f;
-	//	}
-	//	else
-	//	{
-	//		return -1000.f;
-	//	}
-	//}
-	//else if (true) // isStalemate (add to Chess_Board copy constructor)
-	//{
-	//	return 0.0f;
-	//}
-	else if (aMaximizingColour == myMaximizingColour)
+	else
 	{
-		float value = -theMaxFloatValue;
-		const Chess_Pieces_Colour evalMaximizeColour = aMaximizingColour == Chess_Pieces_Colour::WHITE ? Chess_Pieces_Colour::BLACK : Chess_Pieces_Colour::WHITE;
-		const std::vector<Chess_Move_Simple>& possibleMoves = aChessBoard->EvaluateAllPossibleMoves(aMaximizingColour);
-		for (const Chess_Move_Simple& move : possibleMoves)
-		{
-			// Evaluate Move
-			aChessBoard->MovePiece(aChessBoard->GetTile(move.myToTile), aChessBoard->GetTile(move.myFromTile), Event_Source::EVALUATION, true);
-			const float evaluation = Evaluate(aChessBoard, evalMaximizeColour, aSearchIndex - 1, anAlphaPrune, aBetaPrune);
-			aChessBoard->TakeBackLastMove(Event_Source::EVALUATION);
+		std::vector<Chess_Move_Simple> possibleMoves = aChessBoard->EvaluateAllPossibleMoves(aMaximizingColour);
 
-			// Add Best Moves To List
-			if (evaluation > value)
+		if (possibleMoves.size() == 0)
+		{
+			const bool isCheckMate = myCheckRuleHandler->Evaluate(aChessBoard, aMaximizingColour);
+			const int multiplier = aMaximizingColour == Chess_Pieces_Colour::WHITE ? 1 : -1;
+			const float endGameReturn = (myCheckRuleHandler->Evaluate(aChessBoard, aMaximizingColour) ? -theMaxFloatValue : 0.f) * aSearchIndex * multiplier;
+			DEBUG_PRINT_AI("End Game Found - %s - %s - Value: %.f", aMaximizingColour == Chess_Pieces_Colour::WHITE ? "WHITE" : "BLACK", isCheckMate ? "Check Mates" : "Stale Mates", endGameReturn);
+			return endGameReturn;
+		}
+
+		SortPossibleMoves(possibleMoves, aChessBoard);
+
+		if (aMaximizingColour == Chess_Pieces_Colour::WHITE)
+		{
+			for (const Chess_Move_Simple& move : possibleMoves)
 			{
-				const int oldValue = value;
-				value = evaluation;
-				if (aSearchIndex == mySearchDepth)
+				aChessBoard->PerformMovePieceRequest(aChessBoard->GetTile(move.myFromTile), aChessBoard->GetTile(move.myToTile), false);
+				const float evaluation = Evaluate(aChessBoard, Chess_Pieces_Colour::BLACK, aSearchIndex - 1, anAlphaPrune, aBetaPrune);
+				aChessBoard->OnTakeBackPieceRequested();
+
+				if (evaluation >= aBetaPrune)
 				{
-					if (evaluation != oldValue)
+					if (aSearchIndex == mySearchDepth)
 					{
 						myBestMoves.clear();
+						myBestMoves.push_back(move);
 					}
-					
-					myBestMoves.push_back(move);
+					return aBetaPrune;
+				}
+
+				if (evaluation > anAlphaPrune)
+				{
+					if (aSearchIndex == mySearchDepth)
+					{
+						myBestMoves.clear();
+						myBestMoves.push_back(move);
+					}
+					anAlphaPrune = evaluation;
 				}
 			}
 
-			// Do Pruning
-			anAlphaPrune = std::max(anAlphaPrune, evaluation);
-			if (anAlphaPrune >= aBetaPrune)
-			{
-				break;
-			}
+			return anAlphaPrune;
 		}
-		
-		return value;
-	}
-	else // if (aMaximizingColour != myMaximizingColour)
-	{
-		float value = theMaxFloatValue;
-		const Chess_Pieces_Colour evalMaximizeColour = aMaximizingColour == Chess_Pieces_Colour::WHITE ? Chess_Pieces_Colour::BLACK : Chess_Pieces_Colour::WHITE;
-		const std::vector<Chess_Move_Simple>& possibleMoves = aChessBoard->EvaluateAllPossibleMoves(aMaximizingColour);
-		for (const Chess_Move_Simple& move : possibleMoves)
+		else
 		{
-			// Evaluate Move
-			aChessBoard->MovePiece(aChessBoard->GetTile(move.myToTile), aChessBoard->GetTile(move.myFromTile), Event_Source::EVALUATION, true);
-			value = std::min(value, Evaluate(aChessBoard, evalMaximizeColour, aSearchIndex - 1, anAlphaPrune, aBetaPrune));
-			aChessBoard->TakeBackLastMove(Event_Source::EVALUATION);
-
-			// Do Pruning
-			aBetaPrune = std::min(aBetaPrune, value);
-			if (anAlphaPrune >= aBetaPrune)
+			for (const Chess_Move_Simple& move : possibleMoves)
 			{
-				break;
-			}
-		}
+				aChessBoard->PerformMovePieceRequest(aChessBoard->GetTile(move.myFromTile), aChessBoard->GetTile(move.myToTile), false);
+				const float evaluation = Evaluate(aChessBoard, Chess_Pieces_Colour::WHITE, aSearchIndex - 1, anAlphaPrune, aBetaPrune);
+				aChessBoard->OnTakeBackPieceRequested();
 
-		return value;
+				if (evaluation <= anAlphaPrune)
+				{
+					if (aSearchIndex == mySearchDepth)
+					{
+						myBestMoves.clear();
+						myBestMoves.push_back(move);
+					}
+					return anAlphaPrune;
+				}
+
+				if (evaluation < aBetaPrune)
+				{
+					if (aSearchIndex == mySearchDepth)
+					{
+						myBestMoves.clear();
+						myBestMoves.push_back(move);
+					}
+					aBetaPrune = evaluation;
+				}
+			}
+
+			return aBetaPrune;
+		}
 	}
 }
 
 const int AI_Evaluate::GetVariableDepthSearch(const Chess_Board* const aChessBoard) const
 {
-	const int numberOfPieces = aChessBoard->GetWhitePieces().size() + aChessBoard->GetBlackPieces().size();
-	static const int numberOfPiecesAtStart = 32;
-	
-	if (numberOfPieces >= 16)
-		return 2;
-	else if (numberOfPieces >= 8)
-		return 4;
-	else if (numberOfPieces >= 6)
-		return 8;
-	else if (numberOfPieces >= 4)
-		return 10;
-	else
-		return 12;
+	if (mySearchDepthOverride > 0)
+	{
+		return mySearchDepthOverride;
+	}
+
+	const int defaultDepth = 5;
+
+	const Chess_Pieces_Colour playerColour = aChessBoard->GetActivePlayer();
+	const std::array<Chess_Piece*, 16>& pieces = playerColour == Chess_Pieces_Colour::WHITE ? aChessBoard->GetWhitePieces() : aChessBoard->GetBlackPieces();
+	int numberOfNonPawnOrKingPieces = 0;
+
+	for (Chess_Piece* piece : pieces)
+	{
+		if (!piece)
+			continue;
+
+		Chess_Pieces_EnumType type = piece->GetType();
+		if (type != PAWN && type != KING)
+		{
+			numberOfNonPawnOrKingPieces++;
+		}
+	}
+
+	if (numberOfNonPawnOrKingPieces == 0)
+	{
+		return defaultDepth + 2;
+	}
+	else if (numberOfNonPawnOrKingPieces <= 1)
+	{
+		return defaultDepth + 1;
+	}
+
+	return defaultDepth;
 }
+
+float AI_Evaluate::RequestStaticAnalysis(Chess_Board* const aChessBoard, const Chess_Pieces_Colour aPlayerTurnColour) const
+{
+	return myBoardAnalyser->Analyse(aChessBoard, aPlayerTurnColour);
+}
+
+const bool AI_Evaluate::ShouldAddMoveToBestMoveList(const float anEvaluation, const float aCurrentBest, const Chess_Move_Simple& aMove, const Chess_Board* const aChessBoard, const Chess_Pieces_Colour aMaximizingDirection) const
+{
+	const bool maximizingForWhite = aMaximizingDirection == Chess_Pieces_Colour::WHITE;
+	const bool moveIsBetter = maximizingForWhite ? anEvaluation >= aCurrentBest : anEvaluation <= aCurrentBest;
+	if (moveIsBetter)
+	{
+		// Discourage Early Queen Moves
+		const Chess_Piece* const piece = aChessBoard->GetTile(aMove.myFromTile)->GetPiece();
+		if (piece && piece->GetType() == Chess_Pieces_EnumType::QUEEN && !piece->GetHasMoved())
+		{
+			return maximizingForWhite ? anEvaluation - 0.75f >= aCurrentBest : anEvaluation + 0.75f >= aCurrentBest;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+void AI_Evaluate::SortPossibleMoves(std::vector<Chess_Move_Simple>& possibleMoves, const Chess_Board* const aChessBoard) const
+{
+	// Taking a piece with equal or higher value is good
+	int bestMove = 0;
+	int bestMoveScore = -1;
+
+	for (unsigned int i = 0; i < possibleMoves.size(); ++i)
+	{
+		const Chess_Piece* const takingPiece = aChessBoard->GetTile(possibleMoves[i].myFromTile)->GetPiece();
+		const Chess_Piece* const takenPiece = aChessBoard->GetTile(possibleMoves[i].myToTile)->GetPiece();
+
+		if (takingPiece && takenPiece)
+		{
+			if (takenPiece->GetScore() >= takingPiece->GetScore())
+			{
+				bestMoveScore = takenPiece->GetScore() - takingPiece->GetScore();
+				bestMove = i;
+			}
+		}
+	}
+
+	if (bestMove > 0)
+	{
+		std::rotate(possibleMoves.begin(), possibleMoves.begin() + bestMove, possibleMoves.end());
+		DEBUG_PRINT_AI_INTENSIVE("Sort Possible Moves First Move Is Now %s to %s", possibleMoves[0].myFromTile.GetReadableName().c_str(), possibleMoves[0].myToTile.GetReadableName().c_str());
+	}
+}
+
+#if DEBUG_ENABLED_AI_INTENSIVE
+void AI_Evaluate::DebugSteppedEvaluationPrintOut(const Chess_Move_Simple& aMove, const int aSearchIndex, const float anEvaluation)
+{
+	std::string spacing = "";
+
+	for (int i = aSearchIndex; i < mySearchDepth; ++i)
+	{
+		spacing.append("-----");
+	}
+
+	DEBUG_PRINT_AI("%s moving from %s to %s evaluates to %.2f", spacing.c_str(), aMove.myFromTile.GetReadableName().c_str(), aMove.myToTile.GetReadableName().c_str(), anEvaluation);
+}
+#endif

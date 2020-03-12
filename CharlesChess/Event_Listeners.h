@@ -20,16 +20,10 @@ public:
 	virtual void OnMovePieceRequested(const Event_MovePieceRequest& anEvent) = 0;
 };
 
-class Event_Listener_RemovePieceRequest
+class Event_Listener_PawnPromotionRequest
 {
 public:
-	virtual void OnRemovePieceRequested(const Event_RemovePieceRequest& anEvent) = 0;
-};
-
-class Event_Listener_ReplacePieceRequest
-{
-public:
-	virtual void OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent) = 0;
+	virtual void OnPawnPromotionRequested(const Event_PawnPromotionRequest& anEvent) = 0;
 };
 
 class Event_Listener_GameOver

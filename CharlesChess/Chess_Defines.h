@@ -52,6 +52,14 @@ public:
 		, myReadableName("")
 	{	
 	}
+	
+	Chess_RankAndFile(const char* aName)
+		: myReadableName(aName)
+	{
+		std::string name = std::string(aName);
+		myFile = static_cast<int>(::toupper(name[0])) - 65;
+		myRank = static_cast<int>(name[1]) - 49;
+	}
 
 	const std::string GetReadableName() const
 	{

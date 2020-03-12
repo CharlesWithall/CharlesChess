@@ -9,7 +9,7 @@ public:
 	{
 		const Chess_GameOverResult winResult = aChessBoard->GetActivePlayer() == Chess_Pieces_Colour::WHITE ? Chess_GameOverResult::BLACKWINS : Chess_GameOverResult::WHITEWINS;
 		const Chess_GameOverResult gameOverResult = myCheckRuleHandler.Evaluate(aChessBoard, aChessBoard->GetActivePlayer()) ? winResult : Chess_GameOverResult::STALEMATE;
-			
+	
 		if (aChessBoard->EvaluateAllPossibleMoves(aChessBoard->GetActivePlayer()).size() == 0)
 		{
 			Event_Handler::GetInstance()->SendGameOverEvent(gameOverResult);

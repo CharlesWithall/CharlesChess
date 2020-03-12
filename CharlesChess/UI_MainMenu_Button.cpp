@@ -12,17 +12,17 @@ UI_MainMenu_Button::UI_MainMenu_Button(UI_MainMenu* aMainMenu, const UI_MainMenu
 	, myMainMenu(aMainMenu)
 	, myMainMenuGraphics(someMainMenuGraphics)
 {
-	const int bgX = theMainMenuFirstButtonPosition.x;
-	const int bgY = theMainMenuFirstButtonPosition.y + (theMainMenuButtonSpacing * aMenuPositionIndex);
+	const float bgX = theMainMenuFirstButtonPosition.x;
+	const float bgY = theMainMenuFirstButtonPosition.y + (theMainMenuButtonSpacing * aMenuPositionIndex);
 	
-	SetBackgroundColour(myMainMenuGraphics, bgX, bgY);
+	SetBackgroundColour(myMainMenuGraphics, static_cast<int>(bgX), static_cast<int>(bgY));
 
 	myButtonHighlight = sf::Sprite(myMainMenuGraphics->GetButtonHighlight());
 	myButtonHighlight.setPosition(bgX, bgY);
 
 	// CPW: Move the position setting into SetText()
-	const int textX = theMainMenuFirstButtonTextPosition.x;
-	const int textY = theMainMenuFirstButtonTextPosition.y + (theMainMenuButtonSpacing * aMenuPositionIndex);
+	const float textX = theMainMenuFirstButtonTextPosition.x;
+	const float textY = theMainMenuFirstButtonTextPosition.y + (theMainMenuButtonSpacing * aMenuPositionIndex);
 	myButtonText.setFont(myMainMenuGraphics->GetFont());
 	myButtonText.setCharacterSize(theMainMenuButtonTextFontSize);
 	myButtonText.setFillColor(theMainMenuButtonTextColour);
@@ -40,22 +40,24 @@ void UI_MainMenu_Button::Draw(sf::RenderWindow& aRenderWindow)
 
 void UI_MainMenu_Button::SetBackgroundColour(const UI_MainMenu_Graphics* const someMainMenuGraphics, const int aBackgroundX, const int aBackgroundY)
 {
+	const sf::Vector2f bgVector = sf::Vector2f(static_cast<float>(aBackgroundX), static_cast<float>(aBackgroundY));
+
 	switch (myButtonType)
 	{
 	case UI_MainMenu_ButtonType::RESUME:
 	case UI_MainMenu_ButtonType::NEW_GAME:
 	case UI_MainMenu_ButtonType::EXIT:
 		myButtonBackground = sf::Sprite(someMainMenuGraphics->GetButtonBackground());
-		myButtonBackground.setPosition(aBackgroundX, aBackgroundY);
+		myButtonBackground.setPosition(bgVector);
 		break;
 	case UI_MainMenu_ButtonType::PLAYER_COLOUR:
 	case UI_MainMenu_ButtonType::VS_PLAYER_OR_COMPUTER:
 		myButtonBackground = sf::Sprite(someMainMenuGraphics->GetToggleButtonBackground());
-		myButtonBackground.setPosition(aBackgroundX, aBackgroundY);
+		myButtonBackground.setPosition(bgVector);
 		break;
 	default:
 		myButtonBackground = sf::Sprite(someMainMenuGraphics->GetButtonBackground());
-		myButtonBackground.setPosition(aBackgroundX, aBackgroundY);
+		myButtonBackground.setPosition(bgVector);
 		break;
 	}
 }

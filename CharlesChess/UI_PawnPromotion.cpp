@@ -5,19 +5,20 @@
 
 #include "Event_Handler.h"
 
-UI_PawnPromotion::UI_PawnPromotion(const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour)
+UI_PawnPromotion::UI_PawnPromotion(const Chess_RankAndFile& aFromRankAndFile, const Chess_RankAndFile& aToRankAndFile, const Chess_Pieces_Colour aColour)
 	: myColour(aColour)
-	, myRankAndFile(aRankAndFile)
+	, myFromRankAndFile(aFromRankAndFile)
+	, myToRankAndFile(aToRankAndFile)
 	, myButtonDownLatch(false)
 	, myButtonUpLatch(false)
 {
 	const int squareLength = 800;
-	const int xOffset = aRankAndFile.myFile * theNativeTileSize.x;
+	const float xOffset = static_cast<float>(aToRankAndFile.myFile * theNativeTileSize.x);
 
-	const int queenYPosition = aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 0 : theNativeTileSize.y * 7;
-	const int rookYPosition = aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 1 : theNativeTileSize.y * 6;
-	const int bishopYPosition = aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 2 : theNativeTileSize.y * 5;
-	const int knightYPosition = aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 3 : theNativeTileSize.y * 4;
+	const float queenYPosition = static_cast<float>(aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 0 : theNativeTileSize.y * 7);
+	const float rookYPosition = static_cast<float>(aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 1 : theNativeTileSize.y * 6);
+	const float bishopYPosition = static_cast<float>(aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 2 : theNativeTileSize.y * 5);
+	const float knightYPosition = static_cast<float>(aColour == Chess_Pieces_Colour::WHITE ? theNativeTileSize.y * 3 : theNativeTileSize.y * 4);
 
 	myBackground = sf::RectangleShape(theNativeScreenSize);
 	myBackground.setFillColor(theMenuBackgroundColour);
@@ -64,10 +65,6 @@ UI_PawnPromotion::UI_PawnPromotion(const Chess_RankAndFile& aRankAndFile, const 
 	mySelectedHighlight = sf::RectangleShape();
 	mySelectedHighlight.setFillColor(theTileSelectedHighlightColour);
 	mySelectedHighlight.setSize(theNativeTileSize);
-}
-
-UI_PawnPromotion::~UI_PawnPromotion()
-{
 }
 
 void UI_PawnPromotion::Draw(sf::RenderWindow& aWindow)
@@ -137,6 +134,10 @@ void UI_PawnPromotion::HandleMouseClick(const Chess_Pieces_EnumType aChessPieceT
 
 	if (myButtonUpLatch && myButtonDownLatch && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		Event_Handler::GetInstance()->SendReplacePieceRequestEvent(myRankAndFile, myColour, Chess_Pieces_EnumType::PAWN, aChessPieceType);
+		//Event_Handler::GetInstance()->SendPawnPromotionRequestEvent(myFromRankAndFile, myToRankAndFile, aChessPieceType);
+		Event_Handler::GetInstance()->SendMovePieceRequestEvent(myFromRankAndFile, myToRankAndFile);
+		UI_Model::GetInstance()->Resync();
+		UI_Model::GetInstance()->SetTurnTaken();
+		UI_Model::GetInstance()->ClosePawnPromotionMenu();
 	}
 }

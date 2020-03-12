@@ -2,6 +2,8 @@
 
 #include "UI_Defines.h"
 #include "UI_Highlight_PossibleMove.h"
+#include "UI_Highlight_PreviousMove.h"
+#include "UI_Listener_Keyboard.h"
 #include "UI_Listener_MouseClick.h"
 #include "UI_Pieces.h"
 #include "UI_Tile.h"
@@ -29,12 +31,15 @@ UI_Board::~UI_Board()
 		delete highlight;
 	}
 
-	if (myMouseClickListener) delete myMouseClickListener;
+	for (UI_Highlight_PreviousMove* highlight : myPreviousMoveHighlights)
+	{
+		delete highlight;
+	}
 
+	if (myMouseClickListener) delete myMouseClickListener;
+	if (myKeyboardListener) delete myKeyboardListener;
+		
 	Event_Handler::GetInstance()->UnregisterEvaluatedPossibleMovesListener(this);
-	Event_Handler::GetInstance()->UnregisterMovePieceRequestListener(this);
-	Event_Handler::GetInstance()->UnregisterReplacePieceRequestListener(this);
-	Event_Handler::GetInstance()->UnregisterRemovePieceRequestListener(this);
 };
 
 void UI_Board::Init(Chess_Board* aChessBoard)
@@ -70,10 +75,8 @@ void UI_Board::Init(Chess_Board* aChessBoard)
 
 	// Listeners
 	Event_Handler::GetInstance()->RegisterEvaluatedPossibleMovesListener(this);
-	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
-	Event_Handler::GetInstance()->RegisterReplacePieceRequestListener(this);
-	Event_Handler::GetInstance()->RegisterRemovePieceRequestListener(this);
 	myMouseClickListener = new UI_Listener_MouseClick(this);
+	myKeyboardListener = new UI_Listener_Keyboard(this);
 }
 
 void UI_Board::Update(sf::RenderWindow& aWindow)
@@ -83,21 +86,27 @@ void UI_Board::Update(sf::RenderWindow& aWindow)
 	UI_Model* model = UI_Model::GetInstance();
 	if (model->IsMenuOpen())
 	{
+		myKeyboardListener->Update(aWindow);
 		return;
 	}
 
 	if (model->GetIsPlayingAgainstComputer() && model->GetMyAIColour() == model->GetTurn())
 	{
 		AI_Model::GetInstance()->RequestAndMakeMove();
+		model->Resync();
+		model->SetTurnTaken();
 	}
 	else
 	{
 		myMouseClickListener->Update(aWindow);
+		myKeyboardListener->Update(aWindow);
 	}
 }
 
 void UI_Board::Draw(sf::RenderWindow& aWindow)
 {
+	// Draw Background + Selected Piece Highlights + Cache Pieces
+	std::vector<UI_Piece*> cachedPieces;
 	for (size_t i = 0; i < myChessTiles.size(); ++i)
 	{
 		UI_RankArray& rank = myChessTiles[i];
@@ -108,15 +117,29 @@ void UI_Board::Draw(sf::RenderWindow& aWindow)
 			if (mySelectedTile == rank[j])
 			{
 				aWindow.draw(*mySelectedHighlight);
-			}
+			}		
 
 			if (UI_Piece* piece = rank[j]->GetPiece())
 			{
-				aWindow.draw(piece->mySprite);
+				cachedPieces.push_back(piece);
 			}
 		}
 	}
 
+	// Draw Previous Move Highlights
+	for (UI_Highlight_PreviousMove* highlight : myPreviousMoveHighlights)
+	{
+		if (highlight)
+			highlight->Draw(aWindow);
+	}
+
+	// Draw Pieces
+	for (UI_Piece* piece : cachedPieces)
+	{
+		aWindow.draw(piece->mySprite);
+	}
+
+	// Draw Possible Move Highlights
 	if (mySelectedTile)
 	{
 		for (UI_Highlight_PossibleMove* highlight : myPossibleMoveHighlights)
@@ -160,22 +183,68 @@ void UI_Board::OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent)
 	}
 }
 
-void UI_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
+void UI_Board::Resync()
 {
-	if (anEvent.myEventSource == Event_Source::EVALUATION)
+	const Chess_Board* const chessBoard = Chess_Model::GetInstance()->GetChessBoard();
+	for (size_t i = 0; i < myChessTiles.size(); ++i)
 	{
-		return;
+		UI_RankArray& rank = myChessTiles[i];
+		for (size_t j = 0; j < rank.size(); ++j)
+		{
+			const Chess_RankAndFile rankAndFile = Chess_RankAndFile(i, j);
+			if (Chess_Tile* tile = chessBoard->GetTile(rankAndFile))
+			{
+				if (Chess_Piece* piece = tile->GetPiece())
+				{
+					UI_Piece* uiPiece = rank[j]->GetPiece();
+					if (!uiPiece || piece->GetType() != uiPiece->myType || piece->GetColour() != uiPiece->myColour)
+					{
+						if (uiPiece)
+							delete uiPiece;
+
+						rank[j]->SetPiece(new UI_Piece(piece->GetType(), piece->GetColour()));
+					}
+				}
+				else
+				{
+					if (rank[j]->GetPiece())
+					{
+						delete rank[j]->GetPiece();
+						rank[j]->SetPiece(nullptr);
+					}
+				}
+			}
+		}
 	}
 
-	UI_Tile* moveToTile = GetTile(anEvent.myToPosition);
-	UI_Tile* moveFromTile = GetTile(anEvent.myFromPosition);
-
-	moveToTile->SetPiece(moveFromTile->GetPiece());
-	moveFromTile->SetPiece(nullptr);
-
-	if (anEvent.myShouldEndTurn)
+	if (const Chess_Move* move = chessBoard->GetLatestMove())
 	{
-		UI_Model::GetInstance()->SetTurnTaken();
+		auto setHighlight = [&](const int index, const Chess_RankAndFile& rankAndFile)
+		{
+			const sf::Vector2f& tilePosition = GetTile(rankAndFile)->GetBackgroundTile().getPosition();
+			if (myPreviousMoveHighlights[index] == nullptr)
+			{
+				UI_Highlight_PreviousMove* highlight = new UI_Highlight_PreviousMove();
+				highlight->SetPosition(tilePosition);
+				highlight->Enable();
+				myPreviousMoveHighlights[index] = highlight;
+			}
+			else
+			{
+				myPreviousMoveHighlights[index]->SetPosition(tilePosition);
+				myPreviousMoveHighlights[index]->Enable();
+			}
+		};
+
+		setHighlight(0, move->myFromTile->GetRankAndFile());
+		setHighlight(1, move->myToTile->GetRankAndFile());
+	}
+	else
+	{
+		for (UI_Highlight_PreviousMove* highlight : myPreviousMoveHighlights)
+		{
+			highlight->Disable();
+		}
 	}
 }
 
@@ -186,33 +255,5 @@ void UI_Board::SetSelectedTile(UI_Tile* aSelectedTile)
 	if (mySelectedTile)
 	{
 		mySelectedHighlight->setPosition(mySelectedTile->GetBackgroundTile().getPosition());
-	}
-}
-
-void UI_Board::OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent)
-{
-	if (anEvent.myFromPieceType != Chess_Pieces_EnumType::INVALID && anEvent.myToPieceType != Chess_Pieces_EnumType::INVALID)
-	{
-		if (UI_Tile* replaceTile = GetTile(anEvent.myRankAndFile))
-		{
-			if (UI_Piece* piece = replaceTile->GetPiece())
-			{
-				delete replaceTile->GetPiece();
-			}
-
-			replaceTile->SetPiece(new UI_Piece(anEvent.myToPieceType, anEvent.myColour));
-		}
-	}
-}
-
-void UI_Board::OnRemovePieceRequested(const Event_RemovePieceRequest& anEvent)
-{
-	if (UI_Tile* removeTile = GetTile(anEvent.myRankAndFile))
-	{
-		if (UI_Piece* piece = removeTile->GetPiece())
-		{
-			delete removeTile->GetPiece();
-			removeTile->SetPiece(nullptr);
-		}
 	}
 }

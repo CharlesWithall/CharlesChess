@@ -24,8 +24,8 @@ UI_Model::UI_Model()
 
 	myIsPlayingAgainstComputer = false;
 	myNewGameColour = UI_MainMenu_NewGameColour::COUNT_NEWGAMECOLOUR;
+	myDebugModeEnabled = false;
 
-	Event_Handler::GetInstance()->RegisterReplacePieceRequestListener(this);
 	Event_Handler::GetInstance()->RegisterGameOverListener(this);
 }
 
@@ -35,7 +35,6 @@ UI_Model::~UI_Model()
 	if (myPawnPromotion) delete myPawnPromotion;
 	if (myMainMenu) delete myMainMenu;
 
-	Event_Handler::GetInstance()->UnregisterReplacePieceRequestListener(this);
 	Event_Handler::GetInstance()->UnregisterGameOverListener(this);
 }
 
@@ -54,9 +53,6 @@ void UI_Model::Run()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-
-		HandleEscapeKeyPress();
-		HandleBackspaceKeyPress();
 
 		window.clear();
 		myUIBoard->Update(window);
@@ -104,50 +100,9 @@ void UI_Model::Reset()
 	myUIBoard->Init(chessBoard);
 }
 
-void UI_Model::OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent)
-{
-	if (anEvent.myFromPieceType == Chess_Pieces_EnumType::PAWN && anEvent.myToPieceType == Chess_Pieces_EnumType::INVALID)
-	{
-		myPawnPromotion = new UI_PawnPromotion(anEvent.myRankAndFile, anEvent.myColour);
-	}
-	else if (myPawnPromotion != nullptr)
-	{
-		delete myPawnPromotion;
-		myPawnPromotion = nullptr;
-	}
-}
-
 void UI_Model::OnGameOver(const Event_GameOver& anEvent)
 {
 	myMainMenu = new UI_MainMenu(anEvent.myGameOverResult);
-}
-
-void UI_Model::HandleEscapeKeyPress()
-{
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-	{
-		if (!myMainMenu)
-		{
-			myMainMenu = new UI_MainMenu(true);
-		}
-	}
-}
-
-void UI_Model::HandleBackspaceKeyPress()
-{
-	static bool isKeyPressed = false;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))
-	{
-		if (!isKeyPressed)
-		{
-			Chess_Model::GetInstance()->GetChessBoard()->TakeBackLastMove(Event_Source::DEFAULT);
-			isKeyPressed = true;
-		}
-	}
-	else
-	{
-		isKeyPressed = false;
-	}
 }
 
 void UI_Model::SetAIColourFromSelection()

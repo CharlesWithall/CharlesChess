@@ -9,6 +9,8 @@
 class Chess_Board;
 
 class UI_Highlight_PossibleMove;
+class UI_Highlight_PreviousMove;
+class UI_Listener_Keyboard;
 class UI_Listener_MouseClick;
 class UI_Tile;
 
@@ -17,9 +19,6 @@ typedef std::array<UI_RankArray, 8> UI_8x82DArray;
 
 class UI_Board
 	: Event_Listener_EvaluatedPossibleMoves
-	, Event_Listener_MovePieceRequest
-	, Event_Listener_ReplacePieceRequest
-	, Event_Listener_RemovePieceRequest
 {
 public:
 	~UI_Board();
@@ -34,15 +33,13 @@ public:
 	const UI_8x82DArray& GetTiles() { return myChessTiles; }
 	const std::vector<UI_Tile*>& GetPossibleMoves() const { return myPossibleMoves; }
 
+	void Resync();
 	void SetSelectedTile(UI_Tile* aSelectedTile);
 
 private:
 	void Draw(sf::RenderWindow& aWindow);
 
 	void OnMovesEvaluated(const Event_EvaulatedPossibleMoves& anEvent) override;
-	void OnMovePieceRequested(const Event_MovePieceRequest& anEvent) override;
-	void OnRemovePieceRequested(const Event_RemovePieceRequest& anEvent) override;
-	void OnReplacePieceRequested(const Event_ReplacePieceRequest& anEvent) override;
 
 	UI_8x82DArray myChessTiles; // Each array of files contains an array of ranks
 	
@@ -51,7 +48,9 @@ private:
 
 	std::vector<UI_Tile*> myPossibleMoves;
 	std::vector<UI_Highlight_PossibleMove*> myPossibleMoveHighlights;
+	std::array<UI_Highlight_PreviousMove*, 2> myPreviousMoveHighlights;
 
 	UI_Listener_MouseClick* myMouseClickListener;
+	UI_Listener_Keyboard* myKeyboardListener;
 };
 

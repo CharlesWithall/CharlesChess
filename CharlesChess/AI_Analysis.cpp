@@ -1,6 +1,7 @@
 #include "AI_Analysis.h"
 
 #include "Chess_Board.h"
+#include "Chess_Helpers.h"
 #include "Chess_Pawn.h"
 #include "Chess_Piece.h"
 #include "Chess_Tile.h"
@@ -16,57 +17,48 @@ AI_Analysis::~AI_Analysis()
 {
 }
 
-const float AI_Analysis::Analyse(const Chess_Board* const aChessBoard) const
+const float AI_Analysis::Analyse(const Chess_Board* const aChessBoard, const Chess_Pieces_Colour playerTurn) const
 {
 	float advantageValue = 0.f;
-	for (const Chess_Piece* const piece : aChessBoard->GetBlackPieces())
+
+	auto analysePieces = [&](const Chess_Piece* piece, const Chess_Pieces_Colour colour, const Chess_Pieces_Colour notColour)
 	{
 		if (piece)
-		{
+		{	
 			if (const Chess_Tile* const tile = piece->GetTile())
 			{
+				const int multiplier = colour == Chess_Pieces_Colour::WHITE ? 1 : -1;
 				const Chess_Pieces_EnumType piecetype = piece->GetType();
 				const bool isPassedPawn = piecetype == Chess_Pieces_EnumType::PAWN && aChessBoard->GetIsPassedPawn(static_cast<const Chess_Pawn* const>(piece));
-				advantageValue -= piece->GetScore();
-				advantageValue -= LookUpPositionScore(piecetype, tile->GetRankAndFile(), Chess_Pieces_Colour::BLACK, isPassedPawn);
+				advantageValue += piece->GetScore() * multiplier;
+				advantageValue += LookUpPositionScore(piecetype, tile->GetRankAndFile(), colour, isPassedPawn) * multiplier;
+				if (playerTurn == notColour && piecetype != Chess_Pieces_EnumType::PAWN && piecetype != Chess_Pieces_EnumType::KING)
+					advantageValue += CalculateAssumedLost(piece, aChessBoard); // This should not use multiplier since this function returns -ve for black and +ve for white
 			}
 		}
-	}
+	};
 
-	for (const Chess_Piece* const piece : aChessBoard->GetWhitePieces())
+	for (const Chess_Piece* piece : aChessBoard->GetBlackPieces())
 	{
-		if (piece)
-		{
-			if (const Chess_Tile* const tile = piece->GetTile())
-			{
-				const Chess_Pieces_EnumType piecetype = piece->GetType();
-				const bool isPassedPawn = piecetype == Chess_Pieces_EnumType::PAWN && aChessBoard->GetIsPassedPawn(static_cast<const Chess_Pawn* const>(piece));
-				advantageValue += piece->GetScore();
-				advantageValue += LookUpPositionScore(piecetype, tile->GetRankAndFile(), Chess_Pieces_Colour::WHITE, isPassedPawn);
-			}
-		}
+		analysePieces(piece, Chess_Pieces_Colour::BLACK, Chess_Pieces_Colour::WHITE);
 	}
 
-	return myMaximizingColour == Chess_Pieces_Colour::BLACK ? -advantageValue : advantageValue;
-}
+	for (const Chess_Piece* piece : aChessBoard->GetWhitePieces())
+	{
+		analysePieces(piece, Chess_Pieces_Colour::WHITE, Chess_Pieces_Colour::BLACK);
+	}
 
-const float AI_Analysis::AnalyseMove(const Chess_Board* const aChessBoard, const Chess_RankAndFile& aFromLocation, const Chess_RankAndFile& aToLocation) const
-{
-	const Chess_Piece* const fromPiece = aChessBoard->GetTile(aFromLocation) ? aChessBoard->GetTile(aFromLocation)->GetPiece() : nullptr;
-	if (!fromPiece)
-		return 0.0f;
+	for (const Chess_Piece* piece : aChessBoard->GetExtraBlackPieces())
+	{
+		analysePieces(piece, Chess_Pieces_Colour::BLACK, Chess_Pieces_Colour::WHITE);
+	}
 
-	const Chess_Pieces_EnumType pieceType = fromPiece->GetType();
-	const bool isPassedPawn = pieceType == Chess_Pieces_EnumType::PAWN && aChessBoard->GetIsPassedPawn(static_cast<const Chess_Pawn* const>(fromPiece));
+	for (const Chess_Piece* piece : aChessBoard->GetExtraWhitePieces())
+	{
+		analysePieces(piece, Chess_Pieces_Colour::WHITE, Chess_Pieces_Colour::BLACK);
+	}
 
-	const Chess_Pieces_Colour fromColour = fromPiece->GetColour();
-	const Chess_Piece* const toPiece = aChessBoard->GetTile(aToLocation) ? aChessBoard->GetTile(aToLocation)->GetPiece() : nullptr;
-	const float takePieceScore = toPiece ? toPiece->GetScore() : 0.0f;
-	const float toLocationScore = LookUpPositionScore(pieceType, aToLocation, fromPiece->GetColour(), isPassedPawn);
-	const float fromLocationScore = LookUpPositionScore(pieceType, aFromLocation, fromPiece->GetColour(), isPassedPawn);
-	const float finalEvaluation = takePieceScore + (toLocationScore - fromLocationScore);
-
-	return myMaximizingColour == Chess_Pieces_Colour::BLACK ? -finalEvaluation : finalEvaluation;
+	return advantageValue;
 }
 
 const float AI_Analysis::LookUpPositionScore(const Chess_Pieces_EnumType aPieceType, const Chess_RankAndFile& aRankAndFile, const Chess_Pieces_Colour aColour, const bool anIsPassedPawn) const
@@ -75,6 +67,13 @@ const float AI_Analysis::LookUpPositionScore(const Chess_Pieces_EnumType aPieceT
 
 	if (anIsPassedPawn)
 	{
+#if DEBUG_ENABLED_AI
+		if (aPieceType != Chess_Pieces_EnumType::PAWN)
+		{
+			DEBUG_PRINT_AI("CRITICAL ERROR: PIECE IS LABELLED AS PASSED PAWN BUT IS NOT PAWN");
+		}
+#endif
+		
 		scoreMap = &myPassedPawnPositionMap;
 	}
 	else
@@ -104,13 +103,8 @@ const float AI_Analysis::LookUpPositionScore(const Chess_Pieces_EnumType aPieceT
 		}
 	}
 
-	Chess_RankAndFile rankAndFile = aRankAndFile;
-	if (aColour == Chess_Pieces_Colour::BLACK)
-	{
-		rankAndFile.myRank = 7 - rankAndFile.myRank;
-	}
-
-	return  scoreMap ? (*scoreMap)[rankAndFile.myRank][rankAndFile.myFile] : 0.0f;
+	const int rankIndex = aColour == Chess_Pieces_Colour::BLACK ? 7 - aRankAndFile.myRank : aRankAndFile.myRank;
+	return  scoreMap ? (*scoreMap)[rankIndex][aRankAndFile.myFile] : 0.0f;
 }
 
 void AI_Analysis::BuildPositionScoreMaps()
@@ -177,4 +171,42 @@ void AI_Analysis::BuildPositionScoreMaps()
 	myPassedPawnPositionMap[2] = { 2.0f,  2.0f,  2.0f,  2.0f,  2.0f,  2.0f,  2.0f, 2.0f };
 	myPassedPawnPositionMap[1] = { 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f, 0.0f };
 	myPassedPawnPositionMap[0] = { 0.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.0f,  0.0f, 0.0f };
+}
+
+const float AI_Analysis::CalculateAssumedLost(const Chess_Piece* const aPiece, const Chess_Board* const aChessBoard) const
+{
+	std::vector<const Chess_Piece*> attackingPieces;
+	std::vector<const Chess_Piece*> defendingPieces;
+	const bool playerIsWhite = aPiece->GetColour() == Chess_Pieces_Colour::WHITE;
+	Chess_Helpers::IsTileAccessible(aPiece->GetTile(), aChessBoard, playerIsWhite ? Chess_Pieces_Colour::BLACK : Chess_Pieces_Colour::WHITE, attackingPieces);
+	Chess_Helpers::IsTileAccessible(aPiece->GetTile(), aChessBoard, aPiece->GetColour(), defendingPieces);
+	auto recursiveCapture = [&](const bool isAttacking, const int scoreToBeat, const int finalScore, auto& recursiveFun) -> int
+	{
+		int bestScore = scoreToBeat;
+		const Chess_Piece* capturingPiece = nullptr;
+		
+		const std::vector<const Chess_Piece*>& piecesToCheck = isAttacking ? attackingPieces : defendingPieces;
+		const std::vector<const Chess_Piece*>& notPiecesToCheck = isAttacking ? defendingPieces : attackingPieces;
+
+		for (const Chess_Piece* piece : piecesToCheck)
+		{
+			const int pieceScore = piece->GetScore();
+			if (pieceScore < bestScore || notPiecesToCheck.size() == 0)
+			{
+				capturingPiece = piece;
+				bestScore = pieceScore;
+			}
+		}
+
+		if (capturingPiece)
+		{
+			const Chess_Pieces_Colour capturingPieceColour = capturingPiece->GetColour();
+			const int onwardScore = capturingPieceColour == Chess_Pieces_Colour::WHITE ? finalScore + scoreToBeat : finalScore - scoreToBeat;
+			return recursiveFun(!isAttacking, capturingPiece->GetScore(), onwardScore, recursiveFun);
+		}
+
+		return finalScore;
+	};
+
+	return static_cast<float>(recursiveCapture(true, aPiece->GetScore(), 0, recursiveCapture));
 }

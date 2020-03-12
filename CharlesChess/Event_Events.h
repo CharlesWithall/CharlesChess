@@ -23,18 +23,28 @@ struct Event_EvaulatedPossibleMoves
 
 struct Event_MovePieceRequest
 {
-	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const Event_Source anEventSource, const bool aShouldEndturn)
+	Event_MovePieceRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition)
 		: myFromPosition(aFromPosition)
 		, myToPosition(aToPosition)
-		, myEventSource(anEventSource)
-		, myShouldEndTurn(aShouldEndturn)
 	{
 	}
 
 	Chess_RankAndFile myFromPosition;
 	Chess_RankAndFile myToPosition;
-	Event_Source myEventSource;
-	bool myShouldEndTurn;
+};
+
+struct Event_PawnPromotionRequest
+{
+	Event_PawnPromotionRequest(const Chess_RankAndFile& aFromPosition, const Chess_RankAndFile& aToPosition, const Chess_Pieces_EnumType aPromotionPiece)
+		: myFromPosition(aFromPosition)
+		, myToPosition(aToPosition)
+		, myPromotionPiece(aPromotionPiece)
+	{
+	}
+
+	Chess_RankAndFile myFromPosition;
+	Chess_RankAndFile myToPosition;
+	Chess_Pieces_EnumType myPromotionPiece;
 };
 
 struct Event_ReplacePieceRequest

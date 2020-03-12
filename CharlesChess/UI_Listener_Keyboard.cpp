@@ -7,6 +7,7 @@
 #include "Chess_Model.h"
 #include "UI_Model.h"
 
+#include "Debug_Defines.h"
 #include "Debug_Readout.h"
 
 #include "Event_Handler.h"
@@ -22,6 +23,8 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 {
 	if (!aWindow.hasFocus())
 		return;
+
+	const bool isDebugMode = UI_Model::GetInstance()->IsDebugMode();
 
 	static bool letterAKeyLatch = false;
 	static bool letterSKeyLatch = false;
@@ -44,7 +47,7 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 	static bool number0KeyLatch = false;
 
 	// Letter A
-	if (letterAKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if (isDebugMode && letterAKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		letterAKeyLatch = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
 
@@ -55,7 +58,7 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 	}
 
 	// Letter S
-	if (letterSKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	if (isDebugMode && letterSKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		letterSKeyLatch = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
 
@@ -77,7 +80,7 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 	}
 
 	// Letter P
-	if (letterPKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+	if (isDebugMode && letterPKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 	{
 		letterPKeyLatch = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
 
@@ -88,7 +91,7 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 	}
 
 	// Letter C
-	if (letterCKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+	if (isDebugMode && letterCKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::C))
 	{
 		letterCKeyLatch = sf::Keyboard::isKeyPressed(sf::Keyboard::C);
 
@@ -110,7 +113,7 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 	}
 
 	// Backspace
-	if (backspaceKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))
+	if (isDebugMode && backspaceKeyLatch != sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))
 	{
 		backspaceKeyLatch = sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace);
 
@@ -120,16 +123,19 @@ void UI_Listener_Keyboard::Update(sf::RenderWindow& aWindow)
 		}
 	}
 
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num1, number1KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num2, number2KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num3, number3KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num4, number4KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num5, number5KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num6, number6KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num7, number7KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num8, number8KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num9, number9KeyLatch);
-	HandleNumberKeyPress(aWindow, sf::Keyboard::Num0, number0KeyLatch);
+	if (isDebugMode)
+	{
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num1, number1KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num2, number2KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num3, number3KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num4, number4KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num5, number5KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num6, number6KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num7, number7KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num8, number8KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num9, number9KeyLatch);
+		HandleNumberKeyPress(aWindow, sf::Keyboard::Num0, number0KeyLatch);
+	}
 }
 
 void UI_Listener_Keyboard::OnAKeyPressed(sf::RenderWindow& aWindow)

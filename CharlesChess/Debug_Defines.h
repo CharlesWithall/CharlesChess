@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG_ENABLED_AI 1
+#define DEBUG_ENABLED_AI 0
 #define DEBUG_ENABLED_AI_INTENSIVE 0
 #define DEBUG_ENABLED_CHESS 0
 

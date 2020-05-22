@@ -4,7 +4,7 @@
 
 #define DEBUG_ENABLED 1
 
-enum Chess_Pieces_EnumType
+enum class Chess_Pieces_EnumType
 {
 	INVALID,
 	BISHOP,
@@ -15,27 +15,27 @@ enum Chess_Pieces_EnumType
 	ROOK
 };
 
-enum Chess_Pieces_Colour
+enum class Chess_Pieces_Colour
 {
 	WHITE,
 	BLACK
 };
 
-enum Chess_Source
+enum class Chess_Source
 {
 	MOVE_REQUEST,
 	CHECK_EVALUATION,
 	GAME_OVER_EVALUATION
 };
 
-enum Chess_GameOverResult
+enum class Chess_GameOverResult
 {
 	STALEMATE,
 	WHITEWINS,
 	BLACKWINS
 };
 
-enum Chess_Special_Move_Type
+enum class Chess_Special_Move_Type
 {
 	NONE,
 	CASTLE,

@@ -12,7 +12,12 @@ class Chess_Tile;
 class Chess_Piece
 {
 public:
-	Chess_Piece(Chess_Pieces_Colour aColour, int aPieceListIndex) : myColour(aColour), myPieceListIndex(aPieceListIndex), myHasMoved(false), myCheckRuleHandler(Chess_Check_Rule()) {};
+	Chess_Piece(Chess_Pieces_Colour aColour, int aPieceListIndex)
+		: myTile(nullptr)
+		, myColour(aColour)
+		, myPieceListIndex(aPieceListIndex)
+		, myHasMoved(false)
+		, myCheckRuleHandler(Chess_Check_Rule()) {};
 	~Chess_Piece();
 
 	static Chess_Piece* CreatePiece(const Chess_Pieces_Colour aColour, const Chess_Pieces_EnumType aType, const int aPieceListIndex);

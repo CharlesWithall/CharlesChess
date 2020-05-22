@@ -282,6 +282,9 @@
     <ClInclude Include="AI_EndGame.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
+    <ClInclude Include="Audio_GameOver.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI_Board.cpp">
@@ -367,6 +370,9 @@
     </ClCompile>
     <ClCompile Include="AI_EndGame.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio_GameOver.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

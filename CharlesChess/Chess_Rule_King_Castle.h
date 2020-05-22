@@ -46,11 +46,11 @@ private:
 			}
 		}
 
-		const Chess_Piece* const king = anOriginTile ? anOriginTile->GetPiece() : nullptr;
-		const Chess_Check_Rule& checkRuleHandler = king->GetCheckRuleHandler();
-
+		const Chess_Piece* const king = anOriginTile ? anOriginTile->GetPiece() : nullptr;	
 		if (!king)
 			return;
+
+		const Chess_Check_Rule& checkRuleHandler = king->GetCheckRuleHandler();
 
 		if (checkRuleHandler.Evaluate(aChessBoard, king->GetColour()))
 			return;
@@ -86,10 +86,10 @@ private:
 		}
 
 		const Chess_Piece* const king = anOriginTile ? anOriginTile->GetPiece() : nullptr;
-		const Chess_Check_Rule& checkRuleHandler = king->GetCheckRuleHandler();
-
 		if (!king)
 			return;
+
+		const Chess_Check_Rule& checkRuleHandler = king->GetCheckRuleHandler();
 
 		if (checkRuleHandler.Evaluate(aChessBoard, king->GetColour()))
 			return;

@@ -166,7 +166,7 @@ const int AI_Evaluate::GetVariableDepthSearch(const Chess_Board* const aChessBoa
 			continue;
 
 		Chess_Pieces_EnumType type = piece->GetType();
-		if (type != PAWN && type != KING)
+		if (type != Chess_Pieces_EnumType::PAWN && type != Chess_Pieces_EnumType::KING)
 		{
 			numberOfNonPawnOrKingPieces++;
 		}

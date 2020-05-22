@@ -69,6 +69,7 @@ struct Chess_Move
 		Chess_Tile* aToTile)
 		: myTakingPiece(aTakingPiece)
 		, myTakenPiece(aTakenPiece)
+		, myPromotedPawn(nullptr)
 		, myFromTile(aFromTile)
 		, myToTile(aToTile)
 		, mySpecialMoveType(Chess_Special_Move_Type::NONE)

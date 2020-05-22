@@ -21,6 +21,7 @@ typedef std::array<Chess_RankArray, 8> Chess_8x82DArray;
 class Chess_Board
 	: Event_Listener_PieceSelected
 	, Event_Listener_MovePieceRequest
+	, Event_Listener_GameOver
 {
 public:
 	Chess_Board();
@@ -42,6 +43,8 @@ public:
 
 	void OnPieceSelected(const Event_PieceSelected& anEvent) override;
 	void OnMovePieceRequested(const Event_MovePieceRequest& anEvent) override;
+	void OnGameOver(const Event_GameOver& anEvent) override;
+
 	void PerformMovePieceRequest(Chess_Tile* const aFromTile, Chess_Tile* const aToTile, const bool aShouldPerformGameOverCheck);
 	void OnTakeBackPieceRequested();
 

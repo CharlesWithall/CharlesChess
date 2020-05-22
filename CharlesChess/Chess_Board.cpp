@@ -39,6 +39,7 @@ Chess_Board::Chess_Board()
 
 	Event_Handler::GetInstance()->RegisterPieceSelectedListener(this);
 	Event_Handler::GetInstance()->RegisterMovePieceRequestListener(this);
+	Event_Handler::GetInstance()->RegisterGameOverListener(this);
 
 	mySpecialRules.push_back(new Chess_Rule_Special_Castle());
 	mySpecialRules.push_back(new Chess_Rule_Special_PawnPromotion());
@@ -69,6 +70,7 @@ Chess_Board::~Chess_Board()
 
 	Event_Handler::GetInstance()->UnregisterPieceSelectedListener(this);
 	Event_Handler::GetInstance()->UnregisterMovePieceRequestListener(this);
+	Event_Handler::GetInstance()->UnregisterGameOverListener(this);
 }
 
 void Chess_Board::InitTiles()
@@ -234,6 +236,11 @@ void Chess_Board::OnMovePieceRequested(const Event_MovePieceRequest& anEvent)
 	Chess_Tile* fromTile = GetTile(anEvent.myFromPosition);
 
 	PerformMovePieceRequest(fromTile, toTile, true);
+}
+
+void Chess_Board::OnGameOver(const Event_GameOver& anEvent)
+{
+	Audio_Model::GetInstance()->Play_GameOver();
 }
 
 void Chess_Board::PerformMovePieceRequest(Chess_Tile* const aFromTile, Chess_Tile* const aToTile, const bool aShouldPerformGameOverCheck)
